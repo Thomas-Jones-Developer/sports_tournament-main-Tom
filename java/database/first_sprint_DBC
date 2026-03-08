@@ -1,0 +1,117 @@
+-- Start a transaction
+BEGIN;
+
+-- Drop and recreate tables
+-- DROP TABLE IF EXISTS Match CASCADE;
+-- DROP TABLE IF EXISTS TeamMember CASCADE;
+-- DROP TABLE IF EXISTS Team CASCADE;
+-- DROP TABLE IF EXISTS Tournament CASCADE;
+-- DROP TABLE IF EXISTS Sport CASCADE;
+-- DROP TABLE IF EXISTS users CASCADE;
+
+CREATE TABLE users (
+    user_id SERIAL PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password_hash VARCHAR(200) NOT NULL,
+    role VARCHAR(50) NOT NULL,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    email VARCHAR(100) UNIQUE
+    -- registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE sport (
+    sport_id SERIAL PRIMARY KEY,
+    sport_name VARCHAR(50)
+);
+
+CREATE TABLE tournament (
+    tournament_id SERIAL PRIMARY KEY,
+    sport_id INT REFERENCES Sport(sport_id) ON DELETE SET NULL,
+    name VARCHAR(100) NOT NULL,
+    season VARCHAR(50),
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    number_of_rounds INT,
+    organizer_id INT REFERENCES users(user_id) ON DELETE SET NULL,
+    entry_fee INT,
+    prize_description VARCHAR(100) NOT NULL,
+    location VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE team (
+    team_id SERIAL PRIMARY KEY,
+    sport_id INT REFERENCES Sport(sport_id) ON DELETE SET NULL,
+    name VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE team_member (
+    team_id INT REFERENCES Team(team_id) ON DELETE CASCADE,
+    user_id INT REFERENCES users(user_id) ON DELETE CASCADE,
+    PRIMARY KEY (team_id, user_id)
+);
+
+CREATE TABLE Match (
+    match_id SERIAL PRIMARY KEY,
+    tournament_id INT REFERENCES Tournament(tournament_id) ON DELETE CASCADE,
+    match_name VARCHAR(100),
+    match_date DATE,
+    match_time TIME,
+    location VARCHAR(100),
+    team_1_id INT REFERENCES Team(team_id) ON DELETE SET NULL,
+    team_2_id INT REFERENCES Team(team_id) ON DELETE SET NULL,
+    team_1_score INT,
+    team_2_score INT,
+    winning_team_id INT REFERENCES Team(team_id) ON DELETE SET NULL
+);
+
+-- THIS IS US TESTING OUR VARIOUS TABLES
+SELECT * FROM users;
+SELECT * FROM match;
+SELECT * FROM Tournament;
+SELECT * FROM sport;
+
+--Must Use to create Soccer
+INSERT INTO sport (sport_name) VALUES ('Soccer') RETURNING sport_id;
+
+-- Grant permissions on users table and sequence
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE users TO final_capstone_appuser;
+GRANT USAGE, SELECT ON SEQUENCE users_user_id_seq TO final_capstone_appuser;
+
+GRANT INSERT, UPDATE, DELETE ON tournament TO final_capstone_appuser;
+GRANT USAGE, SELECT, UPDATE ON SEQUENCE tournament_tournament_id_seq TO final_capstone_appuser;
+GRANT SELECT ON TABLE tournament TO final_capstone_appuser;
+
+--Inserting into sports:
+INSERT INTO sport (sport_name) VALUES ('Soccer') RETURNING sport_id;
+
+
+SELECT * FROM users WHERE username = 'Thomas';
+
+
+-- If you want to keep changes:
+COMMIT;
+
+-- If you want to undo all changes:
+ROLLBACK;
+
+--Join on sport table:
+SELECT
+    t.tournament_id,
+    s.sport_name,
+    t.name AS tournament_name,
+    t.season,
+    t.start_date,
+    t.end_date,
+    t.number_of_rounds,
+    t.organizer_id,
+    t.entry_fee,
+    t.prize_description,
+    t.location
+FROM tournament t
+JOIN sport s
+    ON t.sport_id = s.sport_id;
+
+    FROM tournament t
+    LEFT JOIN sport s
+        ON t.sport_id = s.sport_id;

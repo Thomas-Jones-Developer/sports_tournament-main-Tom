@@ -1,0 +1,116 @@
+.pageInner {
+  display: flex;
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+.profileContainer {
+  width: 100%;
+  max-width: 640px;
+  background:  #DEB887;
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 0 28px rgba(0,0,0,0.18);
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.profileContainer:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 36px rgba(0,0,0,0.22);
+}
+
+.profileHeader {
+  font-size: 36px;
+  display: flex;
+  font-weight: 700;
+  color: #1DB954;
+  text-align: center;
+  margin: 8px 0 20px;
+}
+
+.profileDetails {
+  max-width: 520px;
+  margin: 0 auto;
+}
+.profileDetails p {
+  font-size: 16px;
+  margin: 10px 0;
+  color: #444;
+  font-weight: 600;
+}
+
+.formControl {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 18px;
+}
+.formControl label {
+  margin: 0 0 8px 0;
+  font-weight: 600;
+  color: #333;
+  font-size: 16px;
+}
+.formControl input {
+  width: 100%;
+  display: block;
+  padding: 10px 12px;
+  border: 1px solid #D8C8C8;
+  border-radius: 6px;
+  font-size: 16px;
+  outline: none;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+
+.editBtn {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 100px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #f6f7fa;
+  background-image: linear-gradient(45deg, #0077cc, #3399ff);
+  transition: transform 150ms ease, opacity 150ms ease;
+}
+
+.editBtn:hover { 
+  transform: scale(1.05); opacity: .95; 
+}
+
+.primaryBtn {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 100px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #f6f7fa;
+  background-image: linear-gradient(45deg, #008122, #6fb965);
+  transition: transform 150ms ease, opacity 150ms ease;
+}
+
+.primaryBtn:hover { 
+  transform: scale(1.05); opacity: .95; 
+}
+
+.secondaryBtn {
+  padding: 10px 18px;
+  border: 1px solid #D8C8C8;
+  border-radius: 100px;
+  cursor: pointer;
+  font-weight: 600;
+  background: #fff;
+  color: #444;
+  transition: transform 150ms ease, background 150ms ease;
+}
+.secondaryBtn:hover { 
+  transform: scale(1.03); background: #f4f4f4; 
+}

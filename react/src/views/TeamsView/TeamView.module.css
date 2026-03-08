@@ -1,0 +1,141 @@
+.pageContainer {
+  min-height: 100vh;
+}
+
+.mainContent {
+  flex: 1;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+  position: relative;
+
+  
+}
+
+.mainContent {
+  min-height: calc(100vh - 60px); /* adjust based on header/footer */
+  padding: 20px;
+}
+
+.formContainer {
+  background-color: #fff;  /* white popup container */
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+  width: 100%;
+  max-width: 1200px;
+  overflow-x: auto;
+  animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #41B6E6;
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+.teamsTable {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.tableHeader {
+  background-color: #41B6E6;
+  color: white;
+}
+
+.teamsTable tbody tr:nth-child(even) {
+  background-color: rgba(65,182,230,0.03);
+}
+
+.evenRow { transition: background-color 0.2s; }
+.oddRow { transition: background-color 0.2s; }
+
+.evenRow:hover, .oddRow:hover { background-color: #e8f5e8; }
+
+.joinBtn {
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  background-color: #41B6E6;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.joinBtn:hover { background-color: #f44336; }
+
+.disabledBtn {
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  background-color: #757575;
+  color: white;
+}
+
+.requestedBtn {
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  background-color: orange;
+  color: black;
+}
+
+.activeStatus {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  background-color: #4CAF50;
+  color: white;
+}
+
+.inactiveStatus {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  background-color: #f44336;
+  color: white;
+}
+
+.buttonRow {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.roundedBtn {
+  padding: 12px 25px;
+  border-radius: 50px;
+  background-color: #41B6E6;
+  color: white;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.roundedBtn:hover {
+  background-color: #2E8BB8;
+}

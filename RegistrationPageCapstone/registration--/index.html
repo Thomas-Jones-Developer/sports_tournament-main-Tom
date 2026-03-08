@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css">
+  <title>Create Account</title>
+</head>
+
+<body>
+
+  <header>
+    <div class="header-container">
+      <div id="main-heading">
+        <h1>Create Account</h1>
+      </div>
+      <nav id="main-nav">
+        <button id="menu-button" aria-label="Menu">
+          <span class="icon-placeholder">Menu</span>
+        </button>
+      </nav>
+      <div class="auth-wrapper">
+        <div id="log-in">Log In</div>
+        <div id="home-page">Home</div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section className='container1'>
+      <div>
+        <nav id="credentials-nav">
+          <h1>User Info</h1>
+          <!-- <div>
+            <img id="pickle-ball" src="src/assets/images/asphalt-tennis-court-5354328_1280.jpg"/>
+          </div> -->
+          <div>
+            <label for="name">First Name:</label>
+            <input type="text" id="name" name="name" required />
+          </div>
+          <div>
+            <label for="name">Last Name:</label>
+            <input type="text" id="name" name="name" required />
+          </div>
+
+          <div>
+            <label for="email">Email:</label>
+            <input type="text" id="email" name="email" required />
+          </div>
+          <!-- <div>
+            <img id="soccer-kick" src="src/assets/images/soccer-1678992_1280.jpg"/>
+          </div> -->
+        </nav>
+      </div>
+
+      <nav id="personal-nav">
+        <div>
+          <form>
+            <label for="Nationality">Nationality: </label>
+            <select id="Nationality" name="Nationality" required>
+              <option value="Unselected">None Selected</option>
+              <option value="banana">White</option>
+              <option value="apple">Black</option>
+              <option value="cherry">Asian</option>
+              <option value="orange">Latino</option>
+            </select>
+          </form>
+        </div>
+
+        <div>
+          <label for="date-of-birth">Date of Birth:</label>
+          <input type="date" id="date-of-birth" name="date-of-birth" />
+        </div>
+        <div>
+          <label for="favorite-sport">Favorite Sport:</label>
+          <select id="Sport" name="sport" required>
+            <option value="Unselected">None Selected</option>
+            <option value="Soccer">Soccer</option>
+            <option value="PickleBall">PickleBall</option>
+            <option value="Volleyball">Volleyball</option>
+            <option value="Basketball">Basketball</option>
+          </select>
+        </div>
+        <div>
+          <label for="Gender">Gender:</label>
+          <select id="Gender" name="Gender" required>
+            <option value="Unselected">None Selected</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div>
+          <label for="confirmation">I confirm the information is correct:</label>
+          <input id="confirmation" name="confirmation" type="checkbox" required />
+        </div>
+
+        <div>
+          <button type="submit">Submit</button>
+        </div>
+      </nav>
+      <div id="root"></div>
+      <script type="module" src="/src/main.jsx"></script>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-container">
+      <div class="footer-about">
+        <h4>About</h4>
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Impedit aspernatur nihil quas veniam
+          laboriosam laudantium tempora optio placeat quos blanditiis, quia consequuntur perferendis corrupti
+          autem vel delectus, qui, ea excepturi.</p>
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Totam incidunt nemo accusantium nostrum enim
+          delectus ad atque explicabo quam consequuntur.</p>
+      </div>
+      <div class="footer-links">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="#">Find a Team</a></li>
+          <li><a href="#">Find a Tournament</a></li>
+          <li><a href="#">Host a Tournament</a></li>
+          <li><a href="#">Contact Us</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 OurSiteName. All rights reserved.</p>
+    </div>
+  </footer>
+</body>
+
+</html>

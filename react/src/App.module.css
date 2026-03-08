@@ -1,0 +1,26 @@
+.app {
+    display: flex;          /* sidebar + main area */
+    min-height: 100vh;
+    background: #e8f8f0;    /* light green background behind sidebar */
+  }
+  
+  .mainArea {
+    display: flex;
+    flex-direction: column; /* stack main content + footer */
+    flex: 1;                /* take remaining horizontal space */
+  }
+  
+  .mainContent {
+    flex: 1;                /* grow to fill vertical space */
+    background: #e1d3bf;    /* dark green content area */
+    padding: 2rem;
+  }
+  
+  .footer {
+    background-color: #3c804c; /* footer green */
+    color: rgb(114, 34, 34);
+    text-align: center;
+    padding: 1rem;
+    font-size: 0.9rem;
+    flex-shrink: 0;           /* prevent shrinking */
+  }

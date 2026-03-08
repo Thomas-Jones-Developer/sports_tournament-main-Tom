@@ -1,0 +1,186 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+/* ADD responsive code */
+
+
+/* Branding colors from competitive spirit:border: ; 
+    #E1E1E1 grey
+    #E73725 red
+    #010000 black
+    #FFFFFF white    
+
+    Branding fonts: 
+     background-color: #E1E1E1;
+    font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    */
+
+
+body {
+    background-color: #E1E1E1;
+    font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+
+    margin: 0;
+    padding: 0;
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    background-color: #010000;
+    padding: 20px;
+    align-items: center;
+}
+
+#main-heading h1 {
+    font-size: 32px;
+    color: #FFFFFF;
+    font-weight: 800;
+    margin-left: 25px;
+}
+
+#menu-button {
+    font-size: 28px;
+    color: #FFFFFF;
+    background-color: #E73725;
+    font-weight: 500;
+
+    border: 2px solid #FFFFFF;
+    border-radius: 5px;
+    outline: none;
+    box-shadow: 0 4px 8px rgba(225, 225, 225, 0.7);
+    /*change the 0.7 to control the shadow on the box */
+}
+
+.auth-wrapper {
+    display: flex;
+    gap: 25px;
+    align-items: center;
+}
+
+#log-in {
+    font-size: 26px;
+    color: #E73725;
+    font-weight: 400;
+    margin-right: 0px;
+}
+
+#sign-up {
+    font-size: 26px;
+    color: #E73725;
+    font-weight: 400;
+    margin-right: 0px;
+}
+
+
+
+.tagline {
+    display: flex;
+    color: #E73725;
+    font-weight: 700;
+    font-size: 22px;
+    padding: 20px;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.hero-images {
+    display: flex;
+    padding: 20px;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.call-to-action {
+    display: flex;
+    color: #E73725;
+    font-size: 18px;
+    padding: 20px;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+
+.box {
+    flex: 1;
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    height: 200px;
+    margin: 0 2%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.box:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.box h3 {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    color: #FFFFFF;
+    font-size: 28px;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.9);
+
+    margin: 0;
+    text-align: center;
+    width: 100%;
+    letter-spacing: 1px;
+}
+
+
+.sports-grid {
+    padding: 40px 20px;
+}
+
+a {
+    color: #E73725;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #E1E1E1;
+    text-decoration: underline;
+}
+
+.footer-container {
+    display: flex;
+    justify-content: space-between;
+    background-color: #010000;
+    color: #FFFFFF;
+    padding: 20px;
+
+}
+
+.footer-about {
+    margin-left: 25px;
+    margin-right: 30px;
+
+}
+
+.footer-bottom {
+    margin-left: 25px;
+    font-weight: 400;
+
+}
+

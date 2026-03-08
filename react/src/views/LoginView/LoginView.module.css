@@ -1,0 +1,131 @@
+.pageContainer {
+    min-height: 100vh;
+  }
+  
+  .mainContent {
+    flex: 1;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+    position: relative;
+    min-height: calc(100vh - 60px); /* adjust based on header/footer */
+  }
+  
+  .formContainer {
+    background-color: #fff;  /* white popup container */
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    width: 100%;
+    max-width: 450px;  /* smaller than teams table */
+    animation: slideUp 0.6s ease-out;
+  }
+  
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .title {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #41B6E6;
+    font-size: 2rem;
+    font-weight: bold;
+  }
+  
+  .formControl {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+  }
+  
+  .formControl label {
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .formControl input {
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  
+  .formControl input:focus {
+    border-color: #41B6E6;
+    box-shadow: 0 0 5px rgba(65,182,230,0.5);
+    outline: none;
+  }
+  
+  .buttonRow {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  .roundedBtn {
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    background-color: #41B6E6;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .roundedBtn:hover {
+    background-color: #f44336;
+  }
+  
+
+  .branding {
+  text-align: right;
+  margin-bottom: 20px;
+}
+
+.logo {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #41B6E6;
+  margin: 0;
+}
+
+.tagline {
+  font-size: 1rem;
+  color: #555;
+  margin: 0;
+}
+
+
+.branding {
+    text-align: right;
+    margin-bottom: 20px;
+    padding: 15px 20px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.7); /* semi-transparent background */
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25); /* transparent shadow */
+    display: inline-block; /* keeps the box tight around text */
+  }
+  
+  .logo {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #41B6E6;
+    margin: 0;
+  }
+  
+  .tagline {
+    font-size: 1rem;
+    color: #333;
+    margin: 0;
+  }
+  

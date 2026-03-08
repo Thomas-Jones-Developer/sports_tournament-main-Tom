@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile Page</title>
+  <link rel="stylesheet" href="ProfilePage.css">
+</head>
+<body>
+  <main class="profile-container">
+    <header class="profile-header">
+      <h1 class="app-title">TEsport</h1>
+    </header>
+
+    <div class="profile-card">
+      <div class="profile-left">
+        <img src="pic/Screenshot 2025-08-11 153904.png" alt="Profile" class="profile-avatar">
+        <h2 id="user-name">Lebron James</h2>
+        <p class="username">@jammie</p>
+        <p class="role">NBA Player</p>
+      </div>
+
+      <div class="profile-right">
+        <h3>About</h3>
+        <p id="name">Name: Lebron James</p>
+        <p id="age">Age: 40</p>
+        <p id="email">Email: jammie@nba.com</p>
+        <p id="registration-date">Member Since: 01/01/2003</p>
+        <p id="gender">Gender: Male</p>
+        <p id="role">Role: Player</p>
+        
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Mocking the profile data as if fetched from an API
+    const profileData = {
+      first_name: "Lebron",
+      last_name: "James",
+      username: "jammie",
+      email: "jammie@nba.com",
+      registration_date: "2003-01-01",
+      role: "Player"
+    };
+
+    // Updating the profile data dynamically
+    document.getElementById('user-name').textContent = `${profileData.first_name} ${profileData.last_name}`;
+    document.querySelector('.username').textContent = `@${profileData.username}`;
+    document.querySelector('.role').textContent = profileData.role;
+    document.getElementById('email').textContent = `Email: ${profileData.email}`;
+    document.getElementById('registration-date').textContent = `Member Since: ${new Date(profileData.registration_date).toLocaleDateString()}`;
+  </script>
+</body>
+</html>

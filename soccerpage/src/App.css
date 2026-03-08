@@ -1,0 +1,94 @@
+
+
+h2{
+  color: black;
+  margin-top: 100px;
+  font-size: 50px;
+  font-style:italic;
+  font-style: bold;
+  position:relative;
+  left: 50px;
+  padding: 1px;
+  
+
+
+}
+
+.scheduler{
+  font-size: 20px;
+  text-align: left;
+  position:relative;
+  left: 50px;
+  margin-bottom: 8px;
+  color: #444;
+ 
+
+
+}
+
+.description{
+
+}
+
+.dropDownScheduler{
+  height: 20px;
+  width: 400px;
+  padding: 12px;
+  border: 2px white;
+  border-radius: 2px;
+  background-color: white;
+  position:relative;
+  left: 50px;
+  border: 1px solid rgb(216, 200, 200);
+
+.s{
+    border-color: #0077cc;
+  }
+  
+ 
+
+
+}
+.topText{
+  color: grey;
+}
+
+.PageTop{
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  background-color: white;
+  font-size:x-large;
+  padding: 20px;
+  gap: 860px;
+  margin-top: -270px;
+  text-align: center;
+
+  
+  
+
+}
+
+body{
+  background-color: rgb(220, 232, 225);
+
+}
+
+header{
+  
+}
+
+p{
+  position:relative;
+  left: 50px;
+}
+
+.topic1{
+  margin-bottom: 100px;
+  
+}
+
+div .topic1, .description{
+  margin-top: 0;
+  margin-bottom: 0;
+}
+

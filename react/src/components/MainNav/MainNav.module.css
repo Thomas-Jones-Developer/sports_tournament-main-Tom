@@ -1,0 +1,138 @@
+/* 
+
+.nav {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+    background: #f5f5f5;
+    width: 220px; 
+    min-height: 100vh; 
+  }
+  
+  .logoContainer {
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+  
+  .logo {
+    width: 180px; 
+    height: auto; 
+  }
+  
+  .navLink {
+    margin: 0;
+    background-color: #c3e6cd;
+    height: 40px;
+    border-radius: 0;
+  }
+  
+  .navLink a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    transition: color 0.3s ease, 0.3s ease;
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: block;
+  }
+  
+  .navLink a.active {
+    background: #ddd;
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+
+  .navLink a:hover {
+    color: white;
+    background: #28a745; 
+  } */
+
+
+
+
+  /* //ChatGPT */
+
+  .nav {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.5rem;
+    background: linear-gradient(180deg, #f5f5f5, #e8f8f0);
+    width: auto;
+    min-height: 100vh;
+    box-shadow: 2px 0 15px rgba(0, 0, 0, 0.08);
+    border-right: 1px solid #e0e0e0;
+    transition: all 0.3s ease;
+  }
+
+
+  /* Logo */
+  .logoContainer {
+    margin-bottom: 2.5rem;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+  
+  .logo {
+    width: 160px;
+    height: auto;
+    transition: transform 0.3s ease;
+  }
+  
+  .logo:hover {
+    transform: scale(1.08);
+  }
+  
+  /* Navigation Links */
+  .navLink {
+    margin: 0.4rem 0;
+    width: 100%;
+  }
+  
+  .navLink a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    padding: 12px 16px;
+    border-radius: 8px;
+    display: block;
+    background: #ffffff;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  /* Active link */
+  .navLink a.active {
+    background: linear-gradient(135deg, #28a745, #34d058);
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+  }
+  
+  /* Hover effect */
+  .navLink a:hover {
+    color: white;
+    background: linear-gradient(135deg, #28a745, #218838);
+    transform: translateX(8px);
+    box-shadow: 0 3px 10px rgba(40, 167, 69, 0.2);
+  }
+  
+  /* Ripple effect on hover (subtle) */
+  .navLink a::before {
+    content: "";
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: rgba(255, 255, 255, 0.2);
+    transition: all 0.4s ease;
+  }
+  
+  .navLink a:hover::before {
+    left: 0;
+  }

@@ -1,0 +1,176 @@
+.pageContainer {
+  min-height: 100vh;
+}
+
+.mainContent {
+  flex: 1;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  position: relative;
+  min-height: calc(100vh - 60px);
+  border-radius: 12px;  /* Round the corners of the background image */
+  overflow: hidden;  /* Prevents the image from overflowing its bounds */
+}
+
+.formContainer {
+  background-color: #eacfa3;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  width: 450px;
+  max-width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+/* SCROLLBAR STYLING (green/blue theme) */
+.formContainer::-webkit-scrollbar {
+  width: 12px;
+}
+
+.formContainer::-webkit-scrollbar-track {
+  background: #f5f5f5;
+  border-radius: 10px;
+}
+
+.formContainer::-webkit-scrollbar-thumb {
+  background-color: #28a745;
+  border-radius: 10px;
+  border: 3px solid #f5f5f5;
+}
+
+.formContainer::-webkit-scrollbar-thumb:hover {
+  background-color: #218838;
+}
+
+.title {
+  text-align: center !important;
+  margin: 0 0 30px 0 !important;
+  padding: 0 !important;
+  color: #28a745;
+  font-size: 28px;
+  font-weight: bold;
+  width: 100% !important;
+  display: block !important;
+  position: relative;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  text-align: left;
+}
+
+.formControl {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 0 0 20px 0;
+  }
+
+  .formControl label {
+    white-space: nowrap;
+    display: inline-block;
+  }
+
+  .checkboxRow {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-size: 14px;
+    color: #333;
+    margin-left: 24px;  /* Indent the checkbox line */
+  }
+
+.checkboxRow input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+
+.label {
+  font-weight: 600;
+  color: #333;
+  font-size: 16px;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
+
+.input, .select {
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 16px;
+  background-color: white;
+  transition: border-color 0.3s ease;
+}
+
+.input:focus, .select:focus {
+  outline: none;
+  border-color: #28a745;
+  box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.2);
+}
+
+.submitButton {
+  background-color: #28a745;
+  color: white;
+  padding: 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 10px;
+}
+
+.submitButton:hover {
+  background-color: #218838;
+}
+
+.checkboxRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 14px;
+  color: #333;
+}
+
+/* Animation */
+.teamBody, .formContainer {
+  animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .pageContainer {
+    flex-direction: column;
+  }
+
+  .formContainer {
+    width: 95%;
+    padding: 30px 20px;
+  }
+}

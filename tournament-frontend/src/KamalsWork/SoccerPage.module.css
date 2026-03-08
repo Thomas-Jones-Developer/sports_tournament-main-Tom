@@ -1,0 +1,165 @@
+/* 
+
+ h2{
+    color: black;
+    margin-top: 100px;
+    font-size: 50px;
+    font-style:italic;
+    font-style: bold;
+    position:relative;
+    left: 200px;
+    padding: 1px;
+    
+  
+  
+  } 
+
+  body{
+    background-color: white;
+  }
+  
+  .scheduler{
+    font-size: 20px;
+    text-align: left;
+    position:relative;
+    left: 200px;
+    margin-bottom: 8px;
+    color: #444;
+  }
+  
+  .description{
+  
+  }
+  
+  .dropDownScheduler{
+    height: 50px;
+    width: 420px;
+     border: 2px white;
+    border-radius: 2px;
+    background-color: white;
+    position:relative;
+    left: 200px;
+    border: 1px solid rgb(216, 200, 200);
+  
+  .s{
+      border-color: #0077cc;
+    }
+    
+   
+  
+  
+  }
+  .topText{
+    color: grey;
+  }
+  
+  .PageTop{
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    background-color: white;
+    font-size:x-large;
+    padding: 20px;
+    gap: 860px;
+    margin-top: -270px;
+    text-align: center;
+  
+  }
+  
+  body{
+    background-color: #f6f7fa;
+  
+   } 
+  
+  
+  p{
+    position:relative;
+    left: 200px;
+  }
+  
+  .topic1{
+    margin-bottom: 100px;
+    
+  }
+  
+  div .topic1, .description{
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  
+  .dateTag{
+    position:relative;
+    left: 50px;
+
+  }
+
+
+.headerContainer {
+    display: flex;
+    justify-content: space-between;
+    background-color: #010000;
+    padding: 20px;
+    align-items: center;
+    background-color: white;
+    height: 50px;
+    width: 1865px;
+}
+
+.mainHeading{
+    font-size: 20px;
+    color: green;
+    font-weight: 800;
+    margin-left: 25px;
+    position: relative;
+    left: 20px;
+
+}
+.menu-button {
+    font-size: 28px;
+    color: #FFFFFF;
+    background-color: #E73725;
+    font-weight: 500;
+    border: 2px solid #FFFFFF;
+    border-radius: 5px;
+    outline: none;
+    box-shadow: 0 4px 8px rgba(225, 225, 225, 0.7);
+
+    
+}
+.authWrapper{
+    display: flex;
+    gap: 50px;
+    align-items: center;
+    background-color: white;
+}
+.logIn{
+    font-size: 26px;
+    color: grey;
+    font-weight: 400;
+    margin-right: 0px;
+    
+}
+.signUp {
+    height: 40px;
+    width: 80px;
+    font-size: 15px;
+    color: white;
+    font-weight: 400;
+    margin-right: 0px;
+    background-color: #1DB954;
+    border-radius: 5px;
+    font-weight:bold;
+    font-style:arial;
+    text-align: center;
+    justify-content: center;
+    
+    
+}
+
+.middleBody{
+    background-color:rgb(223, 229, 232);
+    height: 200px;
+}
+
+.logo{
+    width: 250px;
+} */
