@@ -72,7 +72,17 @@ const TournamentsView = ({ isAdmin = false }) => {
           <div className={styles.tournamentSubtitle}>
             Ready to compete? Find a tournament to join here!
           </div>
-
+          <div className={styles.buttonRow}>
+            <button className={styles.roundedBtn} onClick={() => sortData("name")}>
+              Sort by Name {sortConfig.key === "name" ? (sortConfig.direction === "asc" ? "↑" : "↓") : ""}
+            </button>
+            <button className={styles.roundedBtn} onClick={() => sortData("sportName")}>
+              Sort by Sport {sortConfig.key === "sportName" ? (sortConfig.direction === "asc" ? "↑" : "↓") : ""}
+            </button>
+            <button className={styles.roundedBtn} onClick={() => sortData("startDate")}>
+              Sort by Start Date {sortConfig.key === "startDate" ? (sortConfig.direction === "asc" ? "↑" : "↓") : ""}
+            </button>
+          </div>
           <table className={styles.tournamentsTable}>
             <thead>
               <tr>
@@ -132,17 +142,6 @@ const TournamentsView = ({ isAdmin = false }) => {
             </tbody>
           </table>
 
-          <div className={styles.buttonRow}>
-            <button className={styles.roundedBtn} onClick={() => sortData("name")}>
-              Sort by Name {sortConfig.key === "name" ? (sortConfig.direction === "asc" ? "↑" : "↓") : ""}
-            </button>
-            <button className={styles.roundedBtn} onClick={() => sortData("sportName")}>
-              Sort by Sport {sortConfig.key === "sportName" ? (sortConfig.direction === "asc" ? "↑" : "↓") : ""}
-            </button>
-            <button className={styles.roundedBtn} onClick={() => sortData("startDate")}>
-              Sort by Start Date {sortConfig.key === "startDate" ? (sortConfig.direction === "asc" ? "↑" : "↓") : ""}
-            </button>
-          </div>
         </div>
       </div>
     </div>

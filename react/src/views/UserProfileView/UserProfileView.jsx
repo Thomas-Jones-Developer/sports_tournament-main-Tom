@@ -16,7 +16,8 @@ export default function UserProfileView() {
     firstName: "",
     lastName: "",
     email: "",
-  
+    //!Adding more options "is Administrator"
+    role: "ROLE_PLAYER",
   });
 
   useEffect(() => {
@@ -34,6 +35,8 @@ export default function UserProfileView() {
           firstName: d.firstName || "",
           lastName: d.lastName || "",
           email: d.email || "",
+          // ! New option === THIS MIGHT NOT BE WHAT ITS CALLED
+          role: d.authorities?.[0]?.name || "", //! leaving blank as a test // Cool seemed to work
         });
       })
       .catch((err) => {
@@ -56,6 +59,7 @@ export default function UserProfileView() {
         firstName: profile.firstName.trim(),
         lastName: profile.lastName.trim(),
         email: profile.email.trim(),
+        role: profile.role
       });
       setIsEditing(false);
       alert("Profile updated!");
@@ -77,19 +81,25 @@ export default function UserProfileView() {
         minHeight: "100vh",
       }}
     >
-      
-      
+
+
       <div className={styles.pageInner}>
         <div className={styles.profileContainer}>
           <h2 className={styles.profileHeader}>Your Profile</h2>
-  
+
           {!isEditing ? (
             <div className={styles.profileDetails}>
               <p><strong>Username:</strong> {profile.username}</p>
               <p><strong>First Name:</strong> {profile.firstName}</p>
               <p><strong>Last Name:</strong> {profile.lastName}</p>
               <p><strong>Email:</strong> {profile.email}</p>
-  
+            {/* NEW SHIT */}
+              <p>
+                <strong>Account Type:</strong>{" "}
+                {profile.role === "ROLE_ADMIN" ? "Administrator" : "Player"}
+              </p>
+
+
               <div className={styles.actions}>
                 <button className={styles.editBtn} onClick={() => setIsEditing(true)}>
                   Edit
@@ -102,22 +112,29 @@ export default function UserProfileView() {
                 <label>Username</label>
                 <input name="username" value={profile.username} onChange={handleChange} required />
               </div>
-  
+
               <div className={styles.formControl}>
                 <label>First Name</label>
                 <input name="firstName" value={profile.firstName} onChange={handleChange} required />
               </div>
-  
+
               <div className={styles.formControl}>
                 <label>Last Name</label>
                 <input name="lastName" value={profile.lastName} onChange={handleChange} required />
               </div>
-  
+
               <div className={styles.formControl}>
                 <label>Email</label>
                 <input type="email" name="email" value={profile.email} onChange={handleChange} required />
               </div>
-  
+              <div className={styles.formControl}>
+                <label>Account Type</label>
+                <select name="role" value={profile.role} onChange={handleChange}>
+                  <option value="ROLE_PLAYER">Player</option>
+                  <option value="ROLE_ADMIN">Administrator</option>
+                </select>
+              </div>
+
               <div className={styles.actions}>
                 <button type="submit" className={styles.primaryBtn}>Save</button>
                 <button type="button" className={styles.secondaryBtn} onClick={() => setIsEditing(false)}>

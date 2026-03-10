@@ -42,7 +42,17 @@ const TeamsView = () => {
       >
         <div className={styles.formContainer}>
           <h1 className={styles.title}>Our Teams</h1>
-
+          <div className={styles.buttonRow}>
+            <button className={styles.roundedBtn} onClick={() => sortTeams('teamId')}>
+              Sort by Team {sortOrder.column === 'teamId' ? (sortOrder.ascending ? '↑' : '↓') : ''}
+            </button>
+            <button className={styles.roundedBtn} onClick={() => sortTeams('sportName')}>
+              Sort by Sport {sortOrder.column === 'sportName' ? (sortOrder.ascending ? '↑' : '↓') : ''}
+            </button>
+            <button className={styles.roundedBtn} onClick={() => sortTeams('numberOfMembers')}>
+              Sort by Players {sortOrder.column === 'numberOfMembers' ? (sortOrder.ascending ? '↑' : '↓') : ''}
+            </button>
+          </div>
           <table className={styles.teamsTable}>
             <thead>
               <tr className={styles.tableHeader}>
@@ -101,7 +111,7 @@ const TeamsView = () => {
             </tbody>
           </table>
 
-          <div className={styles.buttonRow}>
+          {/* <div className={styles.buttonRow}>
             <button className={styles.roundedBtn} onClick={() => sortTeams('teamId')}>
               Sort by Team {sortOrder.column === 'teamId' ? (sortOrder.ascending ? '↑' : '↓') : ''}
             </button>
@@ -111,7 +121,7 @@ const TeamsView = () => {
             <button className={styles.roundedBtn} onClick={() => sortTeams('numberOfMembers')}>
               Sort by Players {sortOrder.column === 'numberOfMembers' ? (sortOrder.ascending ? '↑' : '↓') : ''}
             </button>
-          </div>
+          </div> */}
 
           <div style={{ textAlign: 'center', marginTop: '20px' }}>
             <Link to="/browseTournaments" className={styles.roundedBtn}>

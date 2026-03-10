@@ -4,7 +4,7 @@ import LoginView from './views/LoginView/LoginView';
 import LogoutView from './views/LogoutView';
 import RegisterView from './views/RegisterView/RegisterView';
 import UserProfileView from './views/UserProfileView/UserProfileView';
-import MainNav from './components/MainNav/MainNav';
+import MainNav from './views/MainNav/MainNav.jsx';
 import ProtectedRoute from './components/ProtectedRoute';
 import CreateTournament from './components/CreateTournament';
 import TeamsView from './views/TeamsView/TeamsView.jsx';
@@ -31,6 +31,7 @@ export default function App() {
               <Route path="/register" element={<RegisterView />} />
               <Route path="/createTournament" element={<CreateTournament />} />
               <Route path="/browseTournaments" element={<BrowseTournaments />} />
+              <Route path="/browsePlayers" element={<BrowsePlayersView />} /> //! just added this
               <Route path="/createTeam" element={<CreateTeamView />} />
               <Route path="/viewTeams" element={<TeamsView />} />
               <Route path="/joinTeam" element={<JoinTeamView />} />

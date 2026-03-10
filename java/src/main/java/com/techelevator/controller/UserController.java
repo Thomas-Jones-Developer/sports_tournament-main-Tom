@@ -90,27 +90,25 @@ public class UserController {
 
 
 //PUT function right here (updates user information
-    @ResponseStatus(HttpStatus.OK) // 200 OK for successful update
-    @RequestMapping(path = "/{userId}", method = RequestMethod.PUT)
-    public User updateUser(@PathVariable int userId, @Valid @RequestBody User updatedUser, Principal principal) {
-        try {
-            // Optional: Ensure the user exists before updating
-            User existingUser = userDao.getUserById(userId);
-            if (existingUser == null) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.");
-            }
-
-            // Make sure the path ID matches the object ID
-            updatedUser.setId(userId);
-
-            // Call DAO to perform update
-            userDao.updateUser(userId, updatedUser);
-
-        } catch (DaoException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "User update failed.");
+@ResponseStatus(HttpStatus.OK)
+@RequestMapping(path = "/{userId}", method = RequestMethod.PUT)
+public User updateUser(@PathVariable int userId, @Valid @RequestBody User updatedUser, Principal principal) {
+    try {
+        User existingUser = userDao.getUserById(userId);
+        if (existingUser == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.");
         }
-        return updatedUser;
+
+        // Sync ID to path
+        updatedUser.setId(userId);
+
+        // DAO now reads updatedUser.getRole(), which updates authorities automatically
+        return userDao.updateUser(userId, updatedUser);
+
+    } catch (DaoException e) {
+        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "User update failed.");
     }
+}
 
     // Example of a helper method for admin check (could be in a service)
     private boolean isAdmin(Principal principal) {

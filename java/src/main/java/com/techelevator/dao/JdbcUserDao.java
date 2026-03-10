@@ -99,25 +99,55 @@ public class JdbcUserDao implements UserDao {
         return newUser;
     }
 
-    //
+
+
+
     @Override
     public User updateUser(int id, User user) throws DaoException {
-        String sql = "UPDATE users SET username = ?, first_name = ?, last_name = ?, email = ? WHERE user_id = ?";
+        String sql = """
+        UPDATE users
+        SET username = ?, first_name = ?, last_name = ?, email = ?, role = ?
+        WHERE user_id = ?
+    """;
+
         try {
             jdbcTemplate.update(sql,
                     user.getUsername(),
                     user.getFirstName(),
                     user.getLastName(),
                     user.getEmail(),
+                    user.getRole(), // <-- this now derives from authorities
                     id
             );
-        } catch (CannotGetJdbcConnectionException e) {
-            throw new DaoException("Unable to connect to server or database", e);
-        } catch (DataIntegrityViolationException e) {
-            throw new DaoException("Data integrity violation", e);
+        } catch (CannotGetJdbcConnectionException | DataIntegrityViolationException e) {
+            throw new DaoException("Unable to update user", e);
         }
-        return user;
+
+        return getUserById(id);
     }
+
+
+
+
+    //
+//    @Override
+//    public User updateUser(int id, User user) throws DaoException {
+//        String sql = "UPDATE users SET username = ?, first_name = ?, last_name = ?, email = ? WHERE user_id = ?";
+//        try {
+//            jdbcTemplate.update(sql,
+//                    user.getUsername(),
+//                    user.getFirstName(),
+//                    user.getLastName(),
+//                    user.getEmail(),
+//                    id
+//            );
+//        } catch (CannotGetJdbcConnectionException e) {
+//            throw new DaoException("Unable to connect to server or database", e);
+//        } catch (DataIntegrityViolationException e) {
+//            throw new DaoException("Data integrity violation", e);
+//        }
+//        return user;
+//    }
 
     @Override
     public int deleteUser(int userId) {

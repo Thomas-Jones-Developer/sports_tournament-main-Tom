@@ -4,7 +4,7 @@ import { UserContext } from '../../context/UserContext';
 // import CreateTournament from '../CreateTournament';
 import logo from "../../assets/greenTElogo.jpg"; 
 // import styles from '../../components/MainNav/MainNav.module.css';
-import styles from "../MainNav/MainNav.module.css";
+import styles from "./MainNav.module.css";
 
 
 export default function MainNav() {
@@ -42,9 +42,9 @@ export default function MainNav() {
         <NavLink to="browseTournaments">Browse Tournaments</NavLink>
       </div>
 
-      {/* <div className={styles.navLink}>
-        <NavLink to="browseUsers">Browse Players</NavLink>
-      </div> */}
+      <div className={styles.navLink}>
+        <NavLink to="browsePlayers">Browse Players</NavLink>
+      </div>
 
       <div className={styles.navLink}>
         <NavLink to="viewTeams">Browse Teams</NavLink>
