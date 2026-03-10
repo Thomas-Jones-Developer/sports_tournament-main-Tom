@@ -17,9 +17,9 @@ export default function FooterView() {
 
       {/* Bottom row: Social icons */}
       <div className={styles.socialRow}>
-        <a href="#"><FaTwitter /></a>
-        <a href="#"><FaFacebookF /></a>
-        <a href="#"><FaInstagram /></a>
+        <a href="https://x.com/"><FaTwitter /></a>
+        <a href="https://facebook.com/"><FaFacebookF /></a>
+        <a href="https://instagram.com/"><FaInstagram /></a>
       </div>
     </footer>
   );

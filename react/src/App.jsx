@@ -16,6 +16,10 @@ import CreateTeamView from './views/CreateTeamView/CreateTeamView.jsx';
 import BracketsView from './views/BracketsView/BracketsVIew.jsx';
 import OurTeamView from './views/OurTeamView/OurTeamView.jsx';
 
+
+import UserPublicProfileView from './views/UserPublicProfileView/UserPublicProfileView.jsx' //! New stuff
+
+
 import FooterView from './FooterView/FooterView'; // site-wide footer
 import styles from './App.module.css';
 
@@ -31,7 +35,12 @@ export default function App() {
               <Route path="/register" element={<RegisterView />} />
               <Route path="/createTournament" element={<CreateTournament />} />
               <Route path="/browseTournaments" element={<BrowseTournaments />} />
+
+
               <Route path="/browsePlayers" element={<BrowsePlayersView />} /> //! just added this
+              <Route path="/publicProfile" element={<UserPublicProfileView />} /> //! added this for public profiles, not protected add later: :id
+
+
               <Route path="/createTeam" element={<CreateTeamView />} />
               <Route path="/viewTeams" element={<TeamsView />} />
               <Route path="/joinTeam" element={<JoinTeamView />} />

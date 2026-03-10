@@ -50,6 +50,33 @@ export default function MainNav() {
         <NavLink to="viewTeams">Browse Teams</NavLink>
       </div>
 
+      {/* Profile - Login - Log-out */}
+      {user ? (
+  <>
+
+      <div className={styles.navLink}>
+      <NavLink to="/publicProfile">Public Profile</NavLink> 
+      {/* //! Add: /:id later */}
+    </div>
+
+
+    <div className={styles.navLink}>
+      <NavLink to="/userProfile">Profile</NavLink>
+    </div>
+    <div className={styles.navLink}>
+      <Link to="/logout">Logout</Link>
+    </div>
+  </>
+) : (
+  <div className={styles.navLink}>
+    <NavLink to="/login">Login</NavLink>
+  </div>
+)}
+
+    </nav>
+  );
+}
+
       {/* <div className={styles.navLink}>
         <NavLink to="ourTeam">Our Team</NavLink>
       </div> */}
@@ -66,31 +93,3 @@ export default function MainNav() {
       {/* <div className={styles.navLink}>
         <NavLink to="joinTournament">Join Tournament</NavLink>
       </div> */}
-
-
-
-
-
-
-      {/* Profile - Login - Log-out */}
-      {user ? (
-  <>
-    <div className={styles.navLink}>
-      <NavLink to="/userProfile">Profile</NavLink>
-    </div>
-    <div className={styles.navLink}>
-      <Link to="/logout">Logout</Link>
-    </div>
-  </>
-) : (
-  <div className={styles.navLink}>
-    <NavLink to="/login">Login</NavLink>
-  </div>
-)}
-
-
-
-
-    </nav>
-  );
-}
