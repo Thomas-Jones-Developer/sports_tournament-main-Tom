@@ -129,6 +129,43 @@
   align-self: center;   /* centers vertically in the flex row */
 }
 
+.Table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+}
+
+.Table tbody tr:nth-child(even) td {
+  background-color: rgba(65, 182, 230, 0.03);
+}
+
+.tableHeader {
+  background-color: #41B6E6;
+  color: white;
+}
+
+.tableCell {
+  padding: 12px 8px;
+  border-bottom: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+}
+
+.clickableRow {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.clickableRow:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  background-color: #f9fcff;
+}
+
+
 /* !============================================== */
 
 .profileContainer {

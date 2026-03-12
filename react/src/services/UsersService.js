@@ -1,13 +1,12 @@
 import axios from "axios";
 
 export default {
-
-  createUser(userBody) {
-    return axios.post("/users", userBody);
-  },
-
   getUsers() {
     return axios.get("/users");
+  },
+
+  getUserById(id) {
+    return axios.get(`/users/${id}`);
   },
 
   getTeams() {
@@ -17,5 +16,4 @@ export default {
   updateUser(userState, id) {
     return axios.put(`/users/${id}`, userState);
   }
-
 };

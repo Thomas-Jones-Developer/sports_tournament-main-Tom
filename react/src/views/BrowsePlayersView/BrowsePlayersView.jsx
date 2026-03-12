@@ -18,7 +18,7 @@ export default function ViewUsers() {
 
         setTeams(teamsData);
 
-        // Create a mapping of userId -> teamName
+        // Map userId -> teamName
         const teamMap = {};
         teamsData.forEach((membership) => {
           teamMap[membership.userId] = membership.teamName;
@@ -90,7 +90,12 @@ export default function ViewUsers() {
             </thead>
             <tbody>
               {users.map((user) => (
-                <tr key={user.id} className={styles.clickableRow}>
+                <tr
+                  key={user.id}
+                  className={styles.clickableRow}
+                  style={{ cursor: "pointer" }}
+                  onClick={() => navigate(`/publicProfile/${user.id}`)}
+                >
                   <td>{user.firstName}</td>
                   <td>{user.lastName}</td>
                   <td>{user.email}</td>

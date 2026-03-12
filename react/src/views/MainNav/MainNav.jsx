@@ -51,18 +51,26 @@ export default function MainNav() {
       </div>
 
       {/* Profile - Login - Log-out */}
-      {user ? (
+{user ? (
   <>
-
-      <div className={styles.navLink}>
-      <NavLink to="/publicProfile">Public Profile</NavLink> 
-      {/* //! Add: /:id later */}
+    <div className={styles.navLink}>
+      {/* Goes to the logged-in user's public profile */}
+      <NavLink to={`/publicProfile/${user.id}`}>My Profile</NavLink>
     </div>
 
+    <div className={styles.navLink}>
+      {/* Goes to the logged-in user's team */}
+      <NavLink to={`/SingleTeam`}>My Team</NavLink> 
+    </div>
+
+    <div className={styles.navLink}>
+      <NavLink to="/Inbox">Inbox</NavLink> 
+    </div>
 
     <div className={styles.navLink}>
       <NavLink to="/userProfile">Profile</NavLink>
     </div>
+
     <div className={styles.navLink}>
       <Link to="/logout">Logout</Link>
     </div>

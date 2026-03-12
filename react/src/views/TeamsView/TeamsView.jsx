@@ -1,11 +1,16 @@
 import { useState, useEffect } from 'react';
 import TeamService from '../../services/TeamService';
-import { Link } from 'react-router-dom';
-import styles from './TeamView.module.css';
+// import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+//! Commenting changed the join button and the sort buttons
+// import styles from './TeamView.module.css'; 
 // import teamsBackground from '../../assets/soccer/SoccerPics/pexels-quyn-ph-m-255082234-13907448.jpg';
 import teamsBackground from '../../assets/volleyball/VolleyballPics/beach-volleyball-6483796_1280.jpg';
+import styles from "../TomsGlobal/TomsGlobal.module.css";
 
 const TeamsView = () => {
+
+  const navigate = useNavigate();
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
   const [requestedTeams, setRequestedTeams] = useState([]);
@@ -53,7 +58,9 @@ const TeamsView = () => {
               Sort by Players {sortOrder.column === 'numberOfMembers' ? (sortOrder.ascending ? '↑' : '↓') : ''}
             </button>
           </div>
-          <table className={styles.teamsTable}>
+
+
+          <table className={styles.Table}>
             <thead>
               <tr className={styles.tableHeader}>
                 <th>Team ID</th>
@@ -66,6 +73,8 @@ const TeamsView = () => {
                 <th>Action</th>
               </tr>
             </thead>
+
+
             <tbody>
               {(loading || teams.length === 0) &&
                 Array.from({ length: 8 }).map((_, i) => (
@@ -78,11 +87,17 @@ const TeamsView = () => {
               {!loading &&
                 teams.map((team, index) => {
                   const isRequested = requestedTeams.includes(team.teamId);
+
+
+
+                  // ! We'll test the clickable here
                   return (
                     <tr
                       key={team.teamId}
-                      className={index % 2 === 0 ? styles.evenRow : styles.oddRow}
+                      className={`${index % 2 === 0 ? styles.evenRow : styles.oddRow} ${styles.clickableRow}`}
+                      onClick={() => navigate(`/SingleTeam/${team.teamId}`)} // <-- dynamic ID
                     >
+
                       <td>{team.teamId}</td>
                       <td>{team.teamName}</td>
                       <td>{team.sportId}</td>
@@ -94,13 +109,23 @@ const TeamsView = () => {
                         </span>
                       </td>
                       <td>{team.userId}</td>
+                      
+                      
                       <td style={{ textAlign: 'center' }}>
                         {!team.acceptingMembers ? (
                           <span className={styles.disabledBtn}>Team Full</span>
                         ) : isRequested ? (
                           <span className={styles.requestedBtn}>Requested</span>
                         ) : (
-                          <button className={styles.joinBtn} onClick={() => handleJoinClick(team.teamId)}>
+                          
+                          
+                          <button
+                            className={styles.joinBtn}
+                            onClick={(e) => {
+                              e.stopPropagation(); // 🔹 stop the event from reaching the <tr>
+                              handleJoinClick(team.teamId);
+                            }}
+                          >
                             Join Team
                           </button>
                         )}
@@ -110,18 +135,6 @@ const TeamsView = () => {
                 })}
             </tbody>
           </table>
-
-          {/* <div className={styles.buttonRow}>
-            <button className={styles.roundedBtn} onClick={() => sortTeams('teamId')}>
-              Sort by Team {sortOrder.column === 'teamId' ? (sortOrder.ascending ? '↑' : '↓') : ''}
-            </button>
-            <button className={styles.roundedBtn} onClick={() => sortTeams('sportName')}>
-              Sort by Sport {sortOrder.column === 'sportName' ? (sortOrder.ascending ? '↑' : '↓') : ''}
-            </button>
-            <button className={styles.roundedBtn} onClick={() => sortTeams('numberOfMembers')}>
-              Sort by Players {sortOrder.column === 'numberOfMembers' ? (sortOrder.ascending ? '↑' : '↓') : ''}
-            </button>
-          </div> */}
 
           <div style={{ textAlign: 'center', marginTop: '20px' }}>
             <Link to="/browseTournaments" className={styles.roundedBtn}>
