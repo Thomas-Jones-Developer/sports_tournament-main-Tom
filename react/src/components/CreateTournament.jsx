@@ -65,13 +65,10 @@ export default function CreateTournament() {
   }
 
   return (
-    <div className={styles.pageContainer}>
-      <div
-        className={styles.mainContent}
-        style={{ backgroundImage: `url(${sportsBackground})` }}
-      >
-        <div className={styles.formContainer}>
-          <div className={styles.title}>Create Tournament</div>
+  <div className={styles.pageContainer} style={{ backgroundImage: `url(${sportsBackground})` }}>
+    <div className={styles.formContainer}>
+      <div className={styles.title}>Create Tournament</div>
+
 
           <form onSubmit={submitForm} className={styles.form}>
             <div className={styles.formControl}>
@@ -237,7 +234,6 @@ export default function CreateTournament() {
           </form>
         </div>
       </div>
-    </div>
   );
 }
 

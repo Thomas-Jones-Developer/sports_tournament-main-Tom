@@ -13,7 +13,7 @@
   .mainContent {
     flex: 1;                /* grow to fill vertical space */
     background: #e1d3bf;    /* dark green content area */
-    padding: 2rem;
+    padding: .5rem;
   }
   
   .footer {

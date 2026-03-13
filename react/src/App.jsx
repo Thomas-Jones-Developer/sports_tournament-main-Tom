@@ -29,7 +29,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <div className={styles.app}>
-        <MainNav /> {/* vertical sidebar stays column */}
+        <MainNav />
 
         <div className={styles.mainArea}>
           <main className={styles.mainContent}>
@@ -65,7 +65,7 @@ export default function App() {
               />
             </Routes>
           </main>
-          <FooterView /> {/* footer stretches across main content */}
+          <FooterView />
         </div>
       </div>
     </BrowserRouter>

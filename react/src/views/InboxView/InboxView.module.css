@@ -1,0 +1,338 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap');
+
+.page {
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  background: #f4f4f0;
+}
+
+/* ── HERO ── */
+.hero {
+  background: #1a2e1a;
+  padding: 48px 40px;
+}
+
+.heroInner {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.heroText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.heroPill {
+  display: inline-block;
+  background: rgba(40, 167, 69, 0.2);
+  border: 1px solid rgba(40, 167, 69, 0.5);
+  color: #6ee08a;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 999px;
+  width: fit-content;
+  margin-bottom: 4px;
+}
+
+.heroName {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+
+.heroSub {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.45);
+  margin: 4px 0 0;
+}
+
+.unreadBadge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(40, 167, 69, 0.15);
+  border: 1px solid rgba(40, 167, 69, 0.4);
+  border-radius: 12px;
+  padding: 16px 24px;
+}
+
+.unreadNum {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 40px;
+  font-weight: 800;
+  color: #28a745;
+  line-height: 1;
+}
+
+.unreadLabel {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 4px;
+}
+
+/* ── CONTENT ── */
+.content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 24px 60px;
+}
+
+/* ── TABS ── */
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #e8e8e4;
+  padding-bottom: 0;
+}
+
+.tab {
+  padding: 12px 24px;
+  border: none;
+  background: transparent;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #888;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tab:hover {
+  color: #1a2e1a;
+}
+
+.tabActive {
+  color: #1a2e1a;
+  border-bottom-color: #28a745;
+}
+
+.tabBadge {
+  background: #28a745;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 999px;
+}
+
+/* ── MESSAGE LIST ── */
+.messageList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.empty {
+  text-align: center;
+  padding: 60px;
+  color: #aaa;
+  font-size: 15px;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e8e8e4;
+}
+
+/* ── MESSAGE CARD ── */
+.messageCard {
+  background: #fff;
+  border: 1px solid #e8e8e4;
+  border-radius: 14px;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.messageCard:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
+  transform: translateY(-1px);
+}
+
+.messageCard.pending {
+  border-left: 4px solid #28a745;
+}
+
+.messageCard.accepted {
+  border-left: 4px solid #28a745;
+  opacity: 0.75;
+}
+
+.messageCard.denied {
+  border-left: 4px solid #e74c3c;
+  opacity: 0.6;
+}
+
+.messageLeft {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  flex: 1;
+  min-width: 0;
+}
+
+.messageAvatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #1a2e1a;
+  color: #28a745;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.messageBody {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.messageFrom {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a2e1a;
+}
+
+.messageTeam {
+  font-size: 12px;
+  color: #28a745;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.messageText {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.5;
+  margin-top: 2px;
+}
+
+.messageDate {
+  font-size: 12px;
+  color: #bbb;
+  margin-top: 4px;
+}
+
+/* ── ACTIONS ── */
+.messageActions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.acceptBtn {
+  padding: 9px 20px;
+  background: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.2s;
+  min-width: 90px;
+}
+
+.acceptBtn:hover { background: #218838; }
+
+.denyBtn {
+  padding: 9px 20px;
+  background: transparent;
+  color: #e74c3c;
+  border: 1.5px solid #e74c3c;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s;
+  min-width: 90px;
+}
+
+.denyBtn:hover {
+  background: #fdf0f0;
+}
+
+/* ── STATUS PILL ── */
+.statusPill {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.statusPill.accepted {
+  background: rgba(40, 167, 69, 0.1);
+  color: #28a745;
+}
+
+.statusPill.denied {
+  background: rgba(231, 76, 60, 0.1);
+  color: #e74c3c;
+}
+
+.statusPill.pending {
+  background: rgba(255, 165, 0, 0.1);
+  color: #f39c12;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 600px) {
+  .heroInner { flex-direction: column; gap: 20px; }
+  .messageCard { flex-direction: column; align-items: flex-start; }
+  .messageActions { flex-direction: row; width: 100%; }
+  .acceptBtn, .denyBtn { flex: 1; }
+}
+
+
+.deleteBtn {
+  padding: 9px 20px;
+  background: transparent;
+  color: #aaa;
+  border: 1.5px solid #ddd;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s;
+  min-width: 90px;
+}
+
+.deleteBtn:hover {
+  color: #e74c3c;
+  border-color: #e74c3c;
+  background: #fdf0f0;
+}

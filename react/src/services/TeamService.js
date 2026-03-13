@@ -12,6 +12,12 @@ export default {
     return axios.get(`/team/${teamId}`);
   },
 
+getTeamByUserId(userId) {
+  return axios.get(`/team/user/${userId}`);
+},
+
+
+
   // POST create team
   createTeam(team) {
     return axios.post('/team/register', team);

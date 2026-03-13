@@ -56,13 +56,9 @@ export default function CreateTeam() {
   };
 
   return (
-    <div className={styles.pageContainer}>
-      <div
-        className={styles.mainContent}
-        style={{ backgroundImage: `url(${sportsBackground})` }}
-      >
-        <div className={styles.formContainer}>
-          <form onSubmit={submitForm} className={styles.form}>
+  <div className={styles.pageContainer} style={{ backgroundImage: `url(${sportsBackground})` }}>
+    <div className={styles.formContainer}>
+      <form onSubmit={submitForm} className={styles.form}>
             <div className={styles.title}>Create Team</div>
 
             <div className={styles.formControl}>
@@ -136,6 +132,5 @@ export default function CreateTeam() {
           </form>
         </div>
       </div>
-    </div>
   );
 }

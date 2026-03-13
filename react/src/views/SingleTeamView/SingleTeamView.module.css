@@ -71,7 +71,7 @@
   letter-spacing: 0.02em;
 }
 
-.heroUsername {
+.heroSport {
   font-size: 15px;
   color: rgba(255, 255, 255, 0.45);
   margin: 0;
@@ -117,13 +117,8 @@
   line-height: 1;
 }
 
-.available {
-  color: #28a745;
-}
-
-.unavailable {
-  color: rgba(255, 255, 255, 0.4);
-}
+.available { color: #28a745; }
+.unavailable { color: rgba(255, 255, 255, 0.35); }
 
 /* ── INFO SECTION ── */
 .infoSection {
@@ -152,7 +147,6 @@
 .infoGrid {
   display: flex;
   flex-direction: column;
-  gap: 0;
 }
 
 .infoRow {
@@ -206,6 +200,12 @@
   transform: translateY(-2px);
 }
 
+.requestBtn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
 .requestedBtn {
   width: 100%;
   padding: 14px;
@@ -215,13 +215,8 @@
   border-radius: 8px;
   font-size: 15px;
   font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
+  cursor: default;
   font-family: 'DM Sans', sans-serif;
-}
-
-.requestedBtn:hover {
-  background: #e8f5e9;
 }
 
 /* ── RESPONSIVE ── */

@@ -1,14 +1,15 @@
 .footer {
-  background-color: #28a745;
+  background: linear-gradient(90deg, #375f4b, #366727 75%);
   color: white;
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
   padding: 2rem 1rem;
   font-size: 1.1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1.5rem;
+  margin: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Top row: links only */

@@ -1,85 +1,112 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom"; // <-- get the teamId from URL
-import styles from "../TomsGlobal/TomsGlobal.module.css";
+import { useParams } from "react-router-dom";
 import TeamService from "../../services/TeamService";
+import UserImage from "../../assets/UserImage.png";
+import styles from "./SingleTeamView.module.css";
 
 export default function SingleTeamView() {
-  const { id } = useParams(); // <-- get the teamId from URL
+  const { id } = useParams();
   const [team, setTeam] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [requested, setRequested] = useState(false); // Track request state
+  const [requested, setRequested] = useState(false);
 
   useEffect(() => {
-    if (!id) return;
-
-    // Fetch single team by ID from the backend
-    TeamService.getTeams() // Ideally use getTeamById(id)
-      .then((response) => {
-        const teamData = response.data.find((t) => t.teamId.toString() === id.toString());
-        setTeam(teamData || null);
-      })
-      .catch((err) => {
-        console.error("Error fetching team data:", err);
-        setTeam(null);
-      })
+    TeamService.getTeamById(id)
+      .then((res) => setTeam(res.data))
+      .catch((error) => console.error("Failed to load team:", error))
       .finally(() => setLoading(false));
   }, [id]);
 
-  // Toggle request state
-  const handleRequestClick = () => {
-    setRequested(prev => !prev);
-  };
+  const handleRequestClick = () => setRequested(true);
 
-  if (loading) return <div className={styles.pageContainer}>Loading team info...</div>;
-  if (!team) return <div className={styles.pageContainer}>Team not found.</div>;
+  if (loading) return <div className={styles.loading}>Loading team info...</div>;
+  if (!team) return <div className={styles.loading}>Team not found.</div>;
 
   return (
-    <div className={styles.pageContainer}>
-      <div className={styles.mainContent}>
-        <div className={styles.formContainer}>
-          <h1 className={styles.title}>{team.teamName}</h1>
+    <div className={styles.page}>
 
-          <div className={styles.pageContainerv2}>
-            <div className={styles.pageContent1}>
-              <div className={styles.columns}>
-                <img
-                  src={team.imageUrl || "src/assets/UserImage.png"}
-                  alt="Team Image"
-                  className={styles.profileImage}
-                />
-                <h2 className={styles.profileRow}>{team.teamName}</h2>
+      {/* Hero */}
+      <div className={styles.hero}>
+        <div className={styles.heroInner}>
+          <img src={UserImage} alt="Team" className={styles.avatar} />
+          <div className={styles.heroText}>
+            <div className={styles.heroPill}>Team Profile</div>
+            <h1 className={styles.heroName}>{team.teamName}</h1>
+            <p className={styles.heroSport}>{team.sportName || "Sport TBD"}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className={styles.content}>
+
+        {/* Stat cards */}
+        <div className={styles.statsRow}>
+          <div className={styles.statCard}>
+            <span className={styles.statLabel}>Sport</span>
+            <span className={styles.statValue}>{team.sportName || "N/A"}</span>
+          </div>
+          <div className={styles.statCard}>
+            <span className={styles.statLabel}>Open Positions</span>
+            <span className={`${styles.statValue} ${team.acceptingMembers ? styles.available : styles.unavailable}`}>
+              {team.acceptingMembers ? "Available" : "Closed"}
+            </span>
+          </div>
+          <div className={styles.statCard}>
+            <span className={styles.statLabel}>Members</span>
+            <span className={styles.statValue}>{team.numberOfMembers ?? "—"}</span>
+          </div>
+          <div className={styles.statCard}>
+            <span className={styles.statLabel}>Team Captain</span>
+            <span className={styles.statValue}>{team.ownerUsername || team.userId || "—"}</span>
+          </div>
+        </div>
+
+        {/* Info + Action */}
+        <div className={styles.infoSection}>
+          <div className={styles.infoCard}>
+            <h2 className={styles.infoTitle}>Team Details</h2>
+            <div className={styles.infoGrid}>
+              <div className={styles.infoRow}>
+                <span className={styles.infoLabel}>Team Name</span>
+                <span className={styles.infoValue}>{team.teamName || "—"}</span>
               </div>
-            </div>
-
-            <div className={styles.pageContent2}>
-              <div className={styles.columns}>
-                <div className={styles.leftColumn}>
-                  <h2 className={styles.profileRow}>Sport</h2>
-                  <h2 className={styles.profileRow}>Open Positions</h2>
-                  <h2 className={styles.profileRow}>Team Captain</h2>
-                </div>
-
-                <div className={styles.rightColumn}>
-                  <h2 className={styles.profileRow}>{team.sportName || "Unknown"}</h2>
-                  <h2 className={styles.profileRow}>{team.openPositions || "Not Available"}</h2>
-                  <h2 className={styles.profileRow}>{team.captain || "TBD"}</h2>
-                </div>
+              <div className={styles.infoRow}>
+                <span className={styles.infoLabel}>Sport</span>
+                <span className={styles.infoValue}>{team.sportName || "—"}</span>
               </div>
-            </div>
-
-            {/* Request Button Section */}
-            <div className={styles.pageContent3}>
-              <div className={styles.columns}>
-                <button
-                  className={requested ? styles.requestedBtn : styles.profileRow2}
-                  onClick={handleRequestClick}
-                >
-                  {requested ? "Request Sent" : "Request to Join Team"}
-                </button>
+              <div className={styles.infoRow}>
+                <span className={styles.infoLabel}>Captain</span>
+                <span className={styles.infoValue}>{team.ownerUsername || team.userId || "—"}</span>
+              </div>
+              <div className={styles.infoRow}>
+                <span className={styles.infoLabel}>Roster Size</span>
+                <span className={styles.infoValue}>{team.numberOfMembers ?? "—"}</span>
+              </div>
+              <div className={styles.infoRow}>
+                <span className={styles.infoLabel}>Recruiting</span>
+                <span className={styles.infoValue}>{team.acceptingMembers ? "Yes" : "No"}</span>
               </div>
             </div>
           </div>
+
+          <div className={styles.actionCard}>
+            <h2 className={styles.infoTitle}>Join This Team</h2>
+            <p className={styles.actionDesc}>
+              {team.acceptingMembers
+                ? `${team.teamName} is actively looking for new players. Send a request to join.`
+                : `${team.teamName} is not currently accepting new members.`}
+            </p>
+            <button
+              className={requested ? styles.requestedBtn : styles.requestBtn}
+              onClick={handleRequestClick}
+              disabled={!team.acceptingMembers && !requested}
+            >
+              {requested ? "✓ Request Sent" : "Request to Join"}
+            </button>
+          </div>
         </div>
+
       </div>
     </div>
   );
