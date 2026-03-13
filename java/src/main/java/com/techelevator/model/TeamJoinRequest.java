@@ -9,6 +9,9 @@ public class TeamJoinRequest {
     private int userId;
     private String status; // PENDING, APPROVED, REJECTED
     private LocalDateTime requestDate;
+    private String type;
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
 
     public int getRequestId() { return requestId; }
     public void setRequestId(int requestId) { this.requestId = requestId; }

@@ -12,16 +12,16 @@
     align-items: center;
     padding: 40px 20px;
     position: relative;
-    min-height: calc(100vh - 60px); /* adjust based on header/footer */
+    min-height: calc(100vh - 60px);
   }
   
   .formContainer {
-    background-color: #fff;  /* white popup container */
+    background-color: #fff;
     padding: 40px;
     border-radius: 12px;
     box-shadow: 0 10px 40px rgba(0,0,0,0.3);
     width: 100%;
-    max-width: 450px;  /* smaller than teams table */
+    max-width: 450px;
     animation: slideUp 0.6s ease-out;
   }
   
@@ -33,7 +33,7 @@
   .title {
     text-align: center;
     margin-bottom: 25px;
-    color: #41B6E6;
+    color: #28a745;
     font-size: 2rem;
     font-weight: bold;
   }
@@ -44,12 +44,12 @@
     margin-bottom: 20px;
   }
   
-  .formControl label {
-    margin-bottom: 8px;
-    font-weight: 600;
-    color: #333;
-  }
-  
+.formControl label {
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
+  text-align: left;
+}
   .formControl input {
     padding: 10px 12px;
     border-radius: 6px;
@@ -59,8 +59,8 @@
   }
   
   .formControl input:focus {
-    border-color: #41B6E6;
-    box-shadow: 0 0 5px rgba(65,182,230,0.5);
+    border-color: #28a745;
+    box-shadow: 0 0 5px rgba(40, 167, 69, 0.4);
     outline: none;
   }
   
@@ -75,51 +75,53 @@
     border-radius: 8px;
     font-size: 1rem;
     font-weight: bold;
-    background-color: #41B6E6;
-    color: white;
+    background: #b3e4ae;
+    color: #333;
     border: none;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    display: inline-block;
   }
   
   .roundedBtn:hover {
-    background-color: #f44336;
+    color: white;
+    background: linear-gradient(135deg, #28a745, #218838);
+    transform: translateX(4px);
+    box-shadow: 0 3px 10px rgba(40, 167, 69, 0.2);
   }
-  
+
+  .roundedBtn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.2);
+    transition: all 0.4s ease;
+  }
+
+  .roundedBtn:hover::before {
+    left: 0;
+  }
 
   .branding {
-  text-align: right;
-  margin-bottom: 20px;
-}
-
-.logo {
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: #41B6E6;
-  margin: 0;
-}
-
-.tagline {
-  font-size: 1rem;
-  color: #555;
-  margin: 0;
-}
-
-
-.branding {
     text-align: right;
     margin-bottom: 20px;
     padding: 15px 20px;
     border-radius: 12px;
-    background: rgba(255, 255, 255, 0.7); /* semi-transparent background */
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25); /* transparent shadow */
-    display: inline-block; /* keeps the box tight around text */
+    background: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    display: inline-block;
   }
   
   .logo {
     font-size: 2.5rem;
     font-weight: bold;
-    color: #41B6E6;
+    color: #28a745;
     margin: 0;
   }
   
@@ -128,4 +130,3 @@
     color: #333;
     margin: 0;
   }
-  

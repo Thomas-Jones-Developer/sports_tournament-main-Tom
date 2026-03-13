@@ -11,34 +11,34 @@ export default function ViewUsers() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    Promise.all([UsersService.getUsers(), UsersService.getTeams()])
-      .then(([usersRes, teamsRes]) => {
-        const usersData = usersRes.data || [];
-        const teamsData = teamsRes.data || [];
+  UsersService.getUsers()
+    .then((usersRes) => {
+      const usersData = usersRes.data || [];
 
-        setTeams(teamsData);
-
-        // Map userId -> teamName
-        const teamMap = {};
-        teamsData.forEach((membership) => {
-          teamMap[membership.userId] = membership.teamName;
+      UsersService.getTeams()
+        .then((teamsRes) => {
+          const teamsData = teamsRes.data || [];
+          const teamMap = {};
+          teamsData.forEach((membership) => {
+            teamMap[membership.userId] = membership.teamName;
+          });
+          const combinedUsers = usersData.map((user) => ({
+            ...user,
+            teamName: teamMap[user.id] || "No Team",
+          }));
+          setUsers(combinedUsers);
+        })
+        .catch(() => {
+          // teams failed, just show users without team names
+          setUsers(usersData.map((user) => ({ ...user, teamName: "No Team" })));
         });
-
-        // Combine users with team names
-        const combinedUsers = usersData.map((user) => ({
-          ...user,
-          teamName: teamMap[user.id] || "No Team",
-        }));
-
-        setUsers(combinedUsers);
-      })
-      .catch((error) => {
-        console.error("Failed to load data:", error);
-        setUsers([]);
-        setTeams([]);
-      })
-      .finally(() => setLoading(false));
-  }, []);
+    })
+    .catch((error) => {
+      console.error("Failed to load users:", error);
+      setUsers([]);
+    })
+    .finally(() => setLoading(false));
+}, []);
 
   const sortData = (key) => {
     let direction = "asc";

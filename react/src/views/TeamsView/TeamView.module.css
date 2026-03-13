@@ -12,24 +12,19 @@
   align-items: center;
   padding: 40px 20px;
   position: relative;
-
-  
-}
-
-.mainContent {
-  min-height: calc(100vh - 60px); /* adjust based on header/footer */
-  padding: 20px;
+  min-height: calc(100vh - 60px);
 }
 
 .formContainer {
-  background-color: #fff;  /* white popup container */
-  padding: 30px;
+  background-color: #fff;
+  padding: 40px;
   border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   width: 100%;
   max-width: 1200px;
   overflow-x: auto;
   animation: slideUp 0.6s ease-out;
+  box-sizing: border-box;
 }
 
 @keyframes slideUp {
@@ -40,50 +35,110 @@
 .title {
   text-align: center;
   margin-bottom: 20px;
-  color: #41B6E6;
+  color: #28a745;
   font-size: 2.5rem;
   font-weight: bold;
 }
 
-.teamsTable {
+/* Handles both styles.Table (current JSX) and styles.teamsTable */
+.teamsTable, .Table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   background-color: white;
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
   margin-bottom: 20px;
+  border: 1px solid #d4edda;
+  box-shadow: 0 2px 8px rgba(40, 167, 69, 0.08);
 }
 
 .tableHeader {
-  background-color: #41B6E6;
+  background: linear-gradient(135deg, #28a745, #218838);
   color: white;
 }
 
-.teamsTable tbody tr:nth-child(even) {
-  background-color: rgba(65,182,230,0.03);
+.tableHeader th {
+  padding: 14px 10px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.3px;
 }
 
-.evenRow { transition: background-color 0.2s; }
-.oddRow { transition: background-color 0.2s; }
+.tableHeader th:first-child {
+  border-radius: 12px 0 0 0;
+}
 
-.evenRow:hover, .oddRow:hover { background-color: #e8f5e8; }
+.tableHeader th:last-child {
+  border-radius: 0 12px 0 0;
+}
+
+/* Alternating row colors - green tint */
+.evenRow {
+  background-color: rgba(40, 167, 69, 0.05);
+  transition: background-color 0.2s;
+}
+
+.oddRow {
+  background-color: #ffffff;
+  transition: background-color 0.2s;
+}
+
+.evenRow:hover, .oddRow:hover {
+  background-color: #d4edda;
+}
+
+/* Round the bottom corners of the last row */
+.teamsTable tbody tr:last-child td:first-child,
+.Table tbody tr:last-child td:first-child {
+  border-radius: 0 0 0 12px;
+}
+
+.teamsTable tbody tr:last-child td:last-child,
+.Table tbody tr:last-child td:last-child {
+  border-radius: 0 0 12px 0;
+}
+
+.skeletonCell {
+  background-color: rgba(0, 0, 0, 0.05);
+  height: 20px;
+  border-radius: 4px;
+  padding: 12px 10px;
+}
+
+.clickableRow {
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.clickableRow:hover {
+  box-shadow: inset 0 0 0 1px rgba(40, 167, 69, 0.2);
+}
 
 .joinBtn {
   padding: 6px 12px;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 12px;
   font-weight: bold;
-  background-color: #41B6E6;
-  color: white;
+  background: #b3e4ae;
+  color: #333;
   border: none;
   cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-.joinBtn:hover { background-color: #f44336; }
+.joinBtn:hover {
+  color: white;
+  background: linear-gradient(135deg, #28a745, #218838);
+  box-shadow: 0 3px 10px rgba(40, 167, 69, 0.2);
+}
 
 .disabledBtn {
   padding: 6px 12px;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 12px;
   font-weight: bold;
   background-color: #757575;
@@ -92,7 +147,7 @@
 
 .requestedBtn {
   padding: 6px 12px;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 12px;
   font-weight: bold;
   background-color: orange;
@@ -104,7 +159,7 @@
   border-radius: 4px;
   font-size: 12px;
   font-weight: bold;
-  background-color: #4CAF50;
+  background-color: #28a745;
   color: white;
 }
 
@@ -126,16 +181,39 @@
 }
 
 .roundedBtn {
-  padding: 12px 25px;
-  border-radius: 50px;
-  background-color: #41B6E6;
-  color: white;
-  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 1rem;
   font-weight: bold;
+  background: #b3e4ae;
+  color: #333;
+  border: none;
   cursor: pointer;
   transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  text-decoration: none;
+  display: inline-block;
 }
 
 .roundedBtn:hover {
-  background-color: #2E8BB8;
+  color: white;
+  background: linear-gradient(135deg, #28a745, #218838);
+  transform: translateX(4px);
+  box-shadow: 0 3px 10px rgba(40, 167, 69, 0.2);
+}
+
+.roundedBtn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: all 0.4s ease;
+}
+
+.roundedBtn:hover::before {
+  left: 0;
 }

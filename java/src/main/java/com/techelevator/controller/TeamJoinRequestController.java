@@ -23,33 +23,45 @@ public class TeamJoinRequestController {
         this.userDao = userDao;
     }
 
-    // Player sends request to join team
+    // Player sends join request
     @PostMapping("/{teamId}/join-request")
     @ResponseStatus(HttpStatus.CREATED)
     public String createJoinRequest(@PathVariable int teamId, Principal principal) {
         User currentUser = userDao.getUserByUsername(principal.getName());
-        teamJoinRequestDao.createJoinRequest(teamId, currentUser.getId());
+        teamJoinRequestDao.createJoinRequest(teamId, currentUser.getId(), "JOIN_REQUEST");
         return "Join request sent for team ID: " + teamId;
     }
 
-    // Captain views pending requests for their team
+
+    // Owner invites a player
+    @PostMapping("/{teamId}/invite/{userId}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public String invitePlayer(@PathVariable int teamId, @PathVariable int userId) {
+        teamJoinRequestDao.createJoinRequest(teamId, userId, "INVITE");
+        return "Invite sent to user ID: " + userId;
+    }
+
     @GetMapping("/{teamId}/join-requests")
     public List<TeamJoinRequest> getRequestsForTeam(@PathVariable int teamId) {
         return teamJoinRequestDao.getRequestsForTeam(teamId);
     }
 
-    // DTO class to map JSON body for status update
     public static class StatusUpdate {
         private String status;
         public String getStatus() { return status; }
         public void setStatus(String status) { this.status = status; }
     }
 
-    // Captain approves or rejects request
     @PutMapping("/join-request/{requestId}")
     public String updateRequestStatus(@PathVariable int requestId, @RequestBody StatusUpdate update) {
         String status = update.getStatus().toUpperCase();
         teamJoinRequestDao.updateRequestStatus(requestId, status);
         return "Request ID " + requestId + " updated to " + status;
+    }
+
+    // Player views their invites
+    @GetMapping("/invites/user/{userId}")
+    public List<TeamJoinRequest> getInvitesForUser(@PathVariable int userId) {
+        return teamJoinRequestDao.getInvitesForUser(userId);
     }
 }

@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import TeamService from "../../services/TeamService";
 import UserImage from "../../assets/UserImage.png";
 import styles from "./SingleTeamView.module.css";
+import UsersService from "../../services/UsersService";
 
 export default function SingleTeamView() {
   const { id } = useParams();
@@ -10,12 +11,24 @@ export default function SingleTeamView() {
   const [loading, setLoading] = useState(true);
   const [requested, setRequested] = useState(false);
 
-  useEffect(() => {
-    TeamService.getTeamById(id)
-      .then((res) => setTeam(res.data))
-      .catch((error) => console.error("Failed to load team:", error))
-      .finally(() => setLoading(false));
-  }, [id]);
+useEffect(() => {
+  TeamService.getTeamById(id)
+    .then((res) => {
+      const teamData = res.data;
+      setTeam(teamData);
+
+      // Fetch the captain's username using the userId
+      if (teamData.userId) {
+        UsersService.getUserById(teamData.userId)
+          .then((userRes) => {
+            setTeam((prev) => ({ ...prev, ownerUsername: userRes.data.username }));
+          })
+          .catch((err) => console.error("Failed to load captain:", err));
+      }
+    })
+    .catch((error) => console.error("Failed to load team:", error))
+    .finally(() => setLoading(false));
+}, [id]);
 
   const handleRequestClick = () => setRequested(true);
 

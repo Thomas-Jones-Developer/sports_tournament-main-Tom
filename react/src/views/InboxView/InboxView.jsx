@@ -1,42 +1,106 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import styles from "./InboxView.module.css";
+import { UserContext } from "../../context/UserContext";
+import axios from "axios";
 
 const TABS = ["Received", "Sent"];
 
-// Placeholder data - replace with real API calls
-const MOCK_RECEIVED = [
-  { id: 1, from: "Alex Johnson", team: "XRavens", message: "We'd love to have you on our team!", date: "2026-03-10", status: "pending" },
-  { id: 2, from: "Maria Chen", team: "Thunder FC", message: "Are you interested in joining our soccer team?", date: "2026-03-08", status: "pending" },
-  { id: 3, from: "James Park", team: "Chess Kings", message: "Looking for a strong player for our chess team.", date: "2026-03-05", status: "accepted" },
-];
-
-const MOCK_SENT = [
-  { id: 1, to: "XRavens", message: "Request to join your team.", dateSent: "2026-03-09", dateReceived: "2026-03-09", status: "pending" },
-  { id: 2, to: "Spike Squad", message: "Request to join your volleyball team.", dateSent: "2026-03-07", dateReceived: "2026-03-07", status: "denied" },
-];
-
 export default function InboxView() {
+  const { user } = useContext(UserContext);
   const [activeTab, setActiveTab] = useState("Received");
-  const [received, setReceived] = useState(MOCK_RECEIVED);
-  const [sent, setSent] = useState(MOCK_SENT);
+  const [received, setReceived] = useState([]);
+  const [sent, setSent] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleAccept = (id) => {
-    setReceived(prev => prev.map(m => m.id === id ? { ...m, status: "accepted" } : m));
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchData = async () => {
+      try {
+        // Fetch teams first so we can enrich everything
+        const teamsRes = await axios.get("/team");
+        const teamsData = teamsRes.data || [];
+        const teamMap = {};
+        teamsData.forEach((t) => { teamMap[t.teamId] = t.teamName; });
+
+        // Sent: join requests this user made
+        const sentRes = await axios.get(`/teams/join-requests/user/${user.id}`);
+        const enrichedSent = (sentRes.data || []).map((r) => ({
+          ...r,
+          teamName: teamMap[r.teamId] || `Team ${r.teamId}`,
+        }));
+        setSent(enrichedSent);
+
+        // Received: two cases
+        if (user.teamId) {
+          // Owner — show join requests sent to their team
+          const receivedRes = await axios.get(`/teams/${user.teamId}/join-requests`);
+          const usersRes = await axios.get("/users");
+          const userMap = {};
+          (usersRes.data || []).forEach((u) => { userMap[u.id] = u; });
+
+          const enrichedReceived = (receivedRes.data || []).map((r) => ({
+            ...r,
+            fromName: userMap[r.userId]
+              ? `${userMap[r.userId].firstName} ${userMap[r.userId].lastName}`
+              : `User ${r.userId}`,
+            fromInitial: userMap[r.userId]?.firstName?.charAt(0) || "?",
+            teamName: teamMap[r.teamId] || `Team ${r.teamId}`,
+          }));
+          setReceived(enrichedReceived);
+        } else {
+          // Player — show invites sent to them by team owners
+          const invitesRes = await axios.get(`/teams/invites/user/${user.id}`);
+          const enrichedInvites = (invitesRes.data || []).map((r) => ({
+            ...r,
+            fromName: teamMap[r.teamId] || `Team ${r.teamId}`,
+            fromInitial: (teamMap[r.teamId] || "T").charAt(0),
+            teamName: teamMap[r.teamId] || `Team ${r.teamId}`,
+          }));
+          setReceived(enrichedInvites);
+        }
+      } catch (err) {
+        console.error("Failed to load inbox:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [user]);
+
+  const handleAccept = (requestId) => {
+    axios.put(`/teams/join-request/${requestId}`, { status: "ACCEPTED" })
+      .then(() => {
+        setReceived(prev => prev.map(m =>
+          m.requestId === requestId ? { ...m, status: "ACCEPTED" } : m
+        ));
+      })
+      .catch((err) => console.error("Failed to accept:", err));
   };
 
-  const handleDeny = (id) => {
-    setReceived(prev => prev.map(m => m.id === id ? { ...m, status: "denied" } : m));
+  const handleDeny = (requestId) => {
+    axios.put(`/teams/join-request/${requestId}`, { status: "DENIED" })
+      .then(() => {
+        setReceived(prev => prev.map(m =>
+          m.requestId === requestId ? { ...m, status: "DENIED" } : m
+        ));
+      })
+      .catch((err) => console.error("Failed to deny:", err));
   };
 
-  const handleDeleteReceived = (id) => {
-  setReceived(prev => prev.filter(m => m.id !== id));
-};
+  const handleDeleteReceived = (requestId) => {
+    setReceived(prev => prev.filter(m => m.requestId !== requestId));
+  };
 
-const handleDeleteSent = (id) => {
-  setSent(prev => prev.filter(m => m.id !== id));
-};
+  const handleDeleteSent = (requestId) => {
+    setSent(prev => prev.filter(m => m.requestId !== requestId));
+  };
 
-  const unreadCount = received.filter(m => m.status === "pending").length;
+  const unreadCount = received.filter(m => m.status === "PENDING").length;
+
+  if (!user) return <div className={styles.empty}>Please log in to view your inbox.</div>;
+  if (loading) return <div className={styles.empty}>Loading...</div>;
 
   return (
     <div className={styles.page}>
@@ -81,34 +145,36 @@ const handleDeleteSent = (id) => {
         {activeTab === "Received" && (
           <div className={styles.messageList}>
             {received.length === 0 ? (
-              <div className={styles.empty}>No messages received yet.</div>
+              <div className={styles.empty}>
+                {user.teamId ? "No pending requests for your team." : "No invites received yet."}
+              </div>
             ) : (
               received.map(msg => (
-                <div key={msg.id} className={`${styles.messageCard} ${styles[msg.status]}`}>
+                <div key={msg.requestId} className={`${styles.messageCard} ${styles[msg.status?.toLowerCase()]}`}>
                   <div className={styles.messageLeft}>
-                    <div className={styles.messageAvatar}>
-                      {msg.from.charAt(0)}
-                    </div>
+                    <div className={styles.messageAvatar}>{msg.fromInitial}</div>
                     <div className={styles.messageBody}>
-                      <div className={styles.messageFrom}>{msg.from}</div>
-                      <div className={styles.messageTeam}>Re: {msg.team}</div>
-                      <div className={styles.messageText}>{msg.message}</div>
-                      <div className={styles.messageDate}>{msg.date}</div>
+                      <div className={styles.messageFrom}>{msg.fromName}</div>
+                      <div className={styles.messageTeam}>Re: {msg.teamName}</div>
+                      <div className={styles.messageText}>
+                        {user.teamId ? "Wants to join your team" : "You've been invited to join this team"}
+                      </div>
+                      <div className={styles.messageDate}>{new Date(msg.requestDate).toLocaleDateString()}</div>
                     </div>
                   </div>
                   <div className={styles.messageActions}>
-  {msg.status === "pending" ? (
-    <>
-      <button className={styles.acceptBtn} onClick={() => handleAccept(msg.id)}>Accept</button>
-      <button className={styles.denyBtn} onClick={() => handleDeny(msg.id)}>Deny</button>
-    </>
-  ) : (
-    <span className={`${styles.statusPill} ${styles[msg.status]}`}>
-      {msg.status.charAt(0).toUpperCase() + msg.status.slice(1)}
-    </span>
-  )}
-  <button className={styles.deleteBtn} onClick={() => handleDeleteReceived(msg.id)}>Delete</button>
-</div>
+                    {msg.status === "PENDING" ? (
+                      <>
+                        <button className={styles.acceptBtn} onClick={() => handleAccept(msg.requestId)}>Accept</button>
+                        <button className={styles.denyBtn} onClick={() => handleDeny(msg.requestId)}>Deny</button>
+                      </>
+                    ) : (
+                      <span className={`${styles.statusPill} ${styles[msg.status?.toLowerCase()]}`}>
+                        {msg.status.charAt(0) + msg.status.slice(1).toLowerCase()}
+                      </span>
+                    )}
+                    <button className={styles.deleteBtn} onClick={() => handleDeleteReceived(msg.requestId)}>Delete</button>
+                  </div>
                 </div>
               ))
             )}
@@ -119,24 +185,24 @@ const handleDeleteSent = (id) => {
         {activeTab === "Sent" && (
           <div className={styles.messageList}>
             {sent.length === 0 ? (
-              <div className={styles.empty}>No messages sent yet.</div>
+              <div className={styles.empty}>No requests sent yet.</div>
             ) : (
               sent.map(msg => (
-                <div key={msg.id} className={`${styles.messageCard} ${styles[msg.status]}`}>
+                <div key={msg.requestId} className={`${styles.messageCard} ${styles[msg.status?.toLowerCase()]}`}>
                   <div className={styles.messageLeft}>
                     <div className={styles.messageAvatar}>→</div>
                     <div className={styles.messageBody}>
-                      <div className={styles.messageFrom}>To: {msg.to}</div>
-                      <div className={styles.messageText}>{msg.message}</div>
-                      <div className={styles.messageDate}>Sent: {msg.dateSent} · Received: {msg.dateReceived}</div>
+                      <div className={styles.messageFrom}>To: {msg.teamName}</div>
+                      <div className={styles.messageText}>Request to join team</div>
+                      <div className={styles.messageDate}>Sent: {new Date(msg.requestDate).toLocaleDateString()}</div>
                     </div>
                   </div>
                   <div className={styles.messageActions}>
-  <span className={`${styles.statusPill} ${styles[msg.status]}`}>
-    {msg.status.charAt(0).toUpperCase() + msg.status.slice(1)}
-  </span>
-  <button className={styles.deleteBtn} onClick={() => handleDeleteSent(msg.id)}>Delete</button>
-</div>
+                    <span className={`${styles.statusPill} ${styles[msg.status?.toLowerCase()]}`}>
+                      {msg.status.charAt(0) + msg.status.slice(1).toLowerCase()}
+                    </span>
+                    <button className={styles.deleteBtn} onClick={() => handleDeleteSent(msg.requestId)}>Delete</button>
+                  </div>
                 </div>
               ))
             )}

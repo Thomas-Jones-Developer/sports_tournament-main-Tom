@@ -10,14 +10,14 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
+  padding: 40px 20px;
   position: relative;
-  min-height: calc(100vh - 60px); /* ensures background fills the screen */
+  min-height: calc(100vh - 60px);
 }
 
 .formContainer {
-  background-color: #fff; /* white pop-up container */
-  padding: 30px;
+  background-color: #fff;
+  padding: 40px;
   border-radius: 12px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   width: 100%;
@@ -31,6 +31,7 @@
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -40,7 +41,7 @@
 .title {
   text-align: center;
   margin-bottom: 20px;
-  color: #41B6E6;
+  color: #28a745;
   font-size: 2.5rem;
   font-weight: bold;
 }
@@ -66,11 +67,11 @@
 }
 
 .playersTable tbody tr:nth-child(even) td {
-  background-color: rgba(65, 182, 230, 0.03);
+  background-color: rgba(40, 167, 69, 0.04);
 }
 
 .tableHeader {
-  background-color: #41B6E6;
+  background: linear-gradient(135deg, #28a745, #218838);
   color: white;
 }
 
@@ -89,28 +90,49 @@
 }
 
 .roundedBtn {
-  padding: 12px 25px;
-  border-radius: 50px;
-  background-color: #41B6E6;
-  color: white;
-  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 1rem;
   font-weight: bold;
+  background: #b3e4ae;
+  border: none;
   cursor: pointer;
   transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
   text-decoration: none;
+  display: inline-block;
 }
 
 .roundedBtn:hover {
-  background-color: #2E8BB8;
+  color: white;
+  background: linear-gradient(135deg, #28a745, #218838);
+  transform: translateX(4px);
+  box-shadow: 0 3px 10px rgba(40, 167, 69, 0.2);
 }
 
-/* Status badges (for roles or special player status) */
+.roundedBtn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: all 0.4s ease;
+}
+
+.roundedBtn:hover::before {
+  left: 0;
+}
+
+/* Status badges */
 .activeStatus {
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 12px;
   font-weight: bold;
-  background-color: #4CAF50;
+  background-color: #28a745;
   color: white;
 }
 
@@ -120,6 +142,15 @@
   font-size: 12px;
   font-weight: bold;
   background-color: #f44336;
+  color: white;
+}
+
+.canceledStatus {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  background-color: #ffa500;
   color: white;
 }
 
@@ -138,15 +169,6 @@
 
 .clickableRow:hover {
   transform: translateY(-3px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  background-color: #f9fcff;
-}
-
-.canceledStatus {
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: bold;
-  background-color: #ffa500; /* orange */
-  color: white;
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.15);
+  background-color: #f4fbf5;
 }

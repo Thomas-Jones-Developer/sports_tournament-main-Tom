@@ -1,12 +1,9 @@
 import { useState, useEffect } from 'react';
 import TeamService from '../../services/TeamService';
-// import { Link } from 'react-router-dom';
 import { Link, useNavigate } from 'react-router-dom';
 //! Commenting changed the join button and the sort buttons
-// import styles from './TeamView.module.css'; 
-// import teamsBackground from '../../assets/soccer/SoccerPics/pexels-quyn-ph-m-255082234-13907448.jpg';
 import teamsBackground from '../../assets/volleyball/VolleyballPics/beach-volleyball-6483796_1280.jpg';
-import styles from "../TomsGlobal/TomsGlobal.module.css";
+import styles from './TeamView.module.css';
 
 const TeamsView = () => {
 

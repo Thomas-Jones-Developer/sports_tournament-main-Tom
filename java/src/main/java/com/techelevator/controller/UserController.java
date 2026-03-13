@@ -37,7 +37,7 @@ public class UserController {
         this.userDao = userDao;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("permitAll()")
     @RequestMapping(method = RequestMethod.GET)
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();

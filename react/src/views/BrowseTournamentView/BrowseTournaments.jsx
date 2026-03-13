@@ -249,7 +249,7 @@ const TournamentsView = ({ isAdmin = false }) => {
 
             {/* Table header */}
             <thead>
-              <tr>
+              <tr className={styles.tableHeader}>
                 <th>ID</th>
                 <th>Name</th>
                 <th>Sport ID</th>
