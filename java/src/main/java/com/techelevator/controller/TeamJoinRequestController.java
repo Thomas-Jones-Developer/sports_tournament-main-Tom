@@ -56,12 +56,36 @@ public class TeamJoinRequestController {
     public String updateRequestStatus(@PathVariable int requestId, @RequestBody StatusUpdate update) {
         String status = update.getStatus().toUpperCase();
         teamJoinRequestDao.updateRequestStatus(requestId, status);
+
+        if (status.equals("ACCEPTED")) {
+            TeamJoinRequest request = teamJoinRequestDao.getRequestById(requestId);
+            teamJoinRequestDao.addTeamMember(request.getTeamId(), request.getUserId());
+        }
+
         return "Request ID " + requestId + " updated to " + status;
+    }
+
+    // User views their own sent requests
+    @GetMapping("/user/{userId}/join-requests")
+    public List<TeamJoinRequest> getRequestsByUser(@PathVariable int userId) {
+        return teamJoinRequestDao.getRequestsByUserId(userId);
+    }
+
+    // Get all requests for a team regardless of type
+    @GetMapping("/{teamId}/all-requests")
+    public List<TeamJoinRequest> getAllRequestsForTeam(@PathVariable int teamId) {
+        return teamJoinRequestDao.getAllRequestsForTeam(teamId);
     }
 
     // Player views their invites
     @GetMapping("/invites/user/{userId}")
     public List<TeamJoinRequest> getInvitesForUser(@PathVariable int userId) {
         return teamJoinRequestDao.getInvitesForUser(userId);
+    }
+
+    // Get all invites sent by a team
+    @GetMapping("/{teamId}/sent-invites")
+    public List<TeamJoinRequest> getInvitesByTeam(@PathVariable int teamId) {
+        return teamJoinRequestDao.getInvitesByTeam(teamId);
     }
 }

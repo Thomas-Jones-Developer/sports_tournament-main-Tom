@@ -23,10 +23,38 @@ public class JdbcTeamJoinRequestDao implements TeamJoinRequestDao {
     @Override
     public void createJoinRequest(int teamId, int userId, String type) {
         String sql = "INSERT INTO team_join_request (team_id, user_id, type) VALUES (?, ?, ?) " +
-                "ON CONFLICT (team_id, user_id) DO NOTHING";
+                "ON CONFLICT (team_id, user_id, type) DO NOTHING";
         jdbcTemplate.update(sql, teamId, userId, type);
     }
 
+    @Override
+    public void addTeamMember(int teamId, int userId) {
+        String sql = "INSERT INTO team_member (team_id, user_id) VALUES (?, ?) ON CONFLICT DO NOTHING";
+        jdbcTemplate.update(sql, teamId, userId);
+    }
+
+    @Override
+    public List<TeamJoinRequest> getAllRequestsForTeam(int teamId) {
+        List<TeamJoinRequest> requests = new ArrayList<>();
+        String sql = "SELECT request_id, team_id, user_id, status, request_date, type " +
+                "FROM team_join_request WHERE team_id = ?";
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, teamId);
+        while (rs.next()) {
+            requests.add(mapRowToTeamJoinRequest(rs));
+        }
+        return requests;
+    }
+
+    @Override
+    public TeamJoinRequest getRequestById(int requestId) {
+        String sql = "SELECT request_id, team_id, user_id, status, request_date, type " +
+                "FROM team_join_request WHERE request_id = ?";
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, requestId);
+        if (rs.next()) {
+            return mapRowToTeamJoinRequest(rs);
+        }
+        return null;
+    }
     @Override
     public List<TeamJoinRequest> getInvitesForUser(int userId) {
         List<TeamJoinRequest> requests = new ArrayList<>();
@@ -43,18 +71,6 @@ public class JdbcTeamJoinRequestDao implements TeamJoinRequestDao {
     public void updateRequestStatus(int requestId, String status) {
         String sql = "UPDATE team_join_request SET status = ? WHERE request_id = ?";
         jdbcTemplate.update(sql, status, requestId);
-    }
-
-    @Override
-    public List<TeamJoinRequest> getRequestsByUserId(int userId) {
-        List<TeamJoinRequest> requests = new ArrayList<>();
-        String sql = "SELECT request_id, team_id, user_id, status, request_date, type " +
-                "FROM team_join_request WHERE team_id = ? AND type = 'JOIN_REQUEST'";
-        SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, userId);
-        while (rs.next()) {
-            requests.add(mapRowToTeamJoinRequest(rs));
-        }
-        return requests;
     }
 
     @Override
@@ -78,5 +94,27 @@ public class JdbcTeamJoinRequestDao implements TeamJoinRequestDao {
         request.setRequestDate(rs.getTimestamp("request_date").toLocalDateTime());
         request.setType(rs.getString("type"));
         return request;
+    }
+    @Override
+    public List<TeamJoinRequest> getInvitesByTeam(int teamId) {
+        List<TeamJoinRequest> requests = new ArrayList<>();
+        String sql = "SELECT request_id, team_id, user_id, status, request_date, type " +
+                "FROM team_join_request WHERE team_id = ? AND type = 'INVITE'";
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, teamId);
+        while (rs.next()) {
+            requests.add(mapRowToTeamJoinRequest(rs));
+        }
+        return requests;
+    }
+    @Override
+    public List<TeamJoinRequest> getRequestsByUserId(int userId) {
+        List<TeamJoinRequest> requests = new ArrayList<>();
+        String sql = "SELECT request_id, team_id, user_id, status, request_date, type " +
+                "FROM team_join_request WHERE user_id = ? AND type = 'JOIN_REQUEST'";
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, userId);
+        while (rs.next()) {
+            requests.add(mapRowToTeamJoinRequest(rs));
+        }
+        return requests;
     }
 }

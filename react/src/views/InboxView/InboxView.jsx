@@ -16,29 +16,48 @@ export default function InboxView() {
     if (!user) return;
 
     const fetchData = async () => {
+      console.log("user.teamId:", user.teamId);
+      console.log("user.id:", user.id);
+
       try {
-        // Fetch teams first so we can enrich everything
+        // Fetch teams and users first for enrichment
         const teamsRes = await axios.get("/team");
         const teamsData = teamsRes.data || [];
         const teamMap = {};
         teamsData.forEach((t) => { teamMap[t.teamId] = t.teamName; });
 
-        // Sent: join requests this user made
-        const sentRes = await axios.get(`/teams/join-requests/user/${user.id}`);
+        const usersRes = await axios.get("/users");
+        const userMap = {};
+        (usersRes.data || []).forEach((u) => { userMap[u.id] = u; });
+
+        // Sent: join requests this user made (player requesting a team)
+        const sentRes = await axios.get(`/teams/user/${user.id}/join-requests`);
+        console.log("Sent data:", sentRes.data);
         const enrichedSent = (sentRes.data || []).map((r) => ({
           ...r,
           teamName: teamMap[r.teamId] || `Team ${r.teamId}`,
+          toName: teamMap[r.teamId] || `Team ${r.teamId}`,
         }));
-        setSent(enrichedSent);
+
+        // If owner, also fetch invites their team sent to players
+        let allSent = enrichedSent;
+        if (user.teamId) {
+          const invitesSentRes = await axios.get(`/teams/${user.teamId}/sent-invites`);
+          const enrichedInvitesSent = (invitesSentRes.data || []).map((r) => ({
+            ...r,
+            teamName: teamMap[r.teamId] || `Team ${r.teamId}`,
+            toName: userMap[r.userId]
+              ? `${userMap[r.userId].firstName} ${userMap[r.userId].lastName}`
+              : `User ${r.userId}`,
+          }));
+          allSent = [...enrichedSent, ...enrichedInvitesSent];
+        }
+        setSent(allSent);
 
         // Received: two cases
         if (user.teamId) {
           // Owner — show join requests sent to their team
           const receivedRes = await axios.get(`/teams/${user.teamId}/join-requests`);
-          const usersRes = await axios.get("/users");
-          const userMap = {};
-          (usersRes.data || []).forEach((u) => { userMap[u.id] = u; });
-
           const enrichedReceived = (receivedRes.data || []).map((r) => ({
             ...r,
             fromName: userMap[r.userId]
@@ -193,7 +212,9 @@ export default function InboxView() {
                     <div className={styles.messageAvatar}>→</div>
                     <div className={styles.messageBody}>
                       <div className={styles.messageFrom}>To: {msg.teamName}</div>
-                      <div className={styles.messageText}>Request to join team</div>
+                      <div className={styles.messageFrom}>
+                        {msg.type === "INVITE" ? `To: ${msg.toName}` : `To: ${msg.teamName}`}
+                      </div>
                       <div className={styles.messageDate}>Sent: {new Date(msg.requestDate).toLocaleDateString()}</div>
                     </div>
                   </div>

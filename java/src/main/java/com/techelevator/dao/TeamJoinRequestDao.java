@@ -9,4 +9,8 @@ public interface TeamJoinRequestDao {
     List<TeamJoinRequest> getInvitesForUser(int userId);
     List<TeamJoinRequest> getRequestsByUserId(int userId);
     void updateRequestStatus(int requestId, String status);
+    void addTeamMember(int teamId, int userId);
+    TeamJoinRequest getRequestById(int requestId);
+    List<TeamJoinRequest> getAllRequestsForTeam(int teamId);
+    List<TeamJoinRequest> getInvitesByTeam(int teamId);
 }

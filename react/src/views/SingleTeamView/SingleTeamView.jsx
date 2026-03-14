@@ -1,36 +1,49 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
 import TeamService from "../../services/TeamService";
 import UserImage from "../../assets/UserImage.png";
 import styles from "./SingleTeamView.module.css";
 import UsersService from "../../services/UsersService";
+import { UserContext } from "../../context/UserContext";
+import axios from "axios";
 
 export default function SingleTeamView() {
   const { id } = useParams();
+  const { user: currentUser } = useContext(UserContext);
   const [team, setTeam] = useState(null);
   const [loading, setLoading] = useState(true);
   const [requested, setRequested] = useState(false);
 
-useEffect(() => {
-  TeamService.getTeamById(id)
-    .then((res) => {
-      const teamData = res.data;
-      setTeam(teamData);
+  useEffect(() => {
+    TeamService.getTeamById(id)
+      .then((res) => {
+        const teamData = res.data;
+        setTeam(teamData);
 
-      // Fetch the captain's username using the userId
-      if (teamData.userId) {
-        UsersService.getUserById(teamData.userId)
-          .then((userRes) => {
-            setTeam((prev) => ({ ...prev, ownerUsername: userRes.data.username }));
-          })
-          .catch((err) => console.error("Failed to load captain:", err));
-      }
-    })
-    .catch((error) => console.error("Failed to load team:", error))
-    .finally(() => setLoading(false));
-}, [id]);
+        if (teamData.userId) {
+          UsersService.getUserById(teamData.userId)
+            .then((userRes) => {
+              setTeam((prev) => ({ ...prev, ownerUsername: userRes.data.username }));
+            })
+            .catch((err) => console.error("Failed to load captain:", err));
+        }
+      })
+      .catch((error) => console.error("Failed to load team:", error))
+      .finally(() => setLoading(false));
+  }, [id]);
 
-  const handleRequestClick = () => setRequested(true);
+  const handleRequestClick = () => {
+    if (!currentUser) {
+      alert("You need to be logged in to request to join a team.");
+      return;
+    }
+    axios.post(`/teams/${id}/join-request`)
+      .then(() => setRequested(true))
+      .catch((err) => {
+        console.error("Failed to send join request:", err);
+        alert("Failed to send request. You may have already requested to join this team.");
+      });
+  };
 
   if (loading) return <div className={styles.loading}>Loading team info...</div>;
   if (!team) return <div className={styles.loading}>Team not found.</div>;
@@ -110,13 +123,17 @@ useEffect(() => {
                 ? `${team.teamName} is actively looking for new players. Send a request to join.`
                 : `${team.teamName} is not currently accepting new members.`}
             </p>
-            <button
-              className={requested ? styles.requestedBtn : styles.requestBtn}
-              onClick={handleRequestClick}
-              disabled={!team.acceptingMembers && !requested}
-            >
-              {requested ? "✓ Request Sent" : "Request to Join"}
-            </button>
+            {!currentUser ? (
+              <p className={styles.actionDesc}>Log in to request to join a team.</p>
+            ) : (
+              <button
+                className={requested ? styles.requestedBtn : styles.requestBtn}
+                onClick={handleRequestClick}
+                disabled={(!team.acceptingMembers && !requested) || requested}
+              >
+                {requested ? "✓ Request Sent" : "Request to Join"}
+              </button>
+            )}
           </div>
         </div>
 
