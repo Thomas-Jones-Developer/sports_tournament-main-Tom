@@ -26,23 +26,63 @@
   max-width: 900px;
   margin: 0 auto;
   display: flex;
+  flex-direction: row;
   align-items: center;
-  gap: 32px;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+.heroLeft {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 28px;
+}
+
+.heroRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+
+.avatarContainer {
+  position: relative;
+  flex-shrink: 0;
 }
 
 .avatar {
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
   object-fit: cover;
   border: 3px solid #28a745;
-  flex-shrink: 0;
+  display: block;
+}
+
+.sportEmoji {
+  position: absolute;
+  bottom: -8px;
+  right: -8px;
+  font-size: 36px;
+  line-height: 1;
+  background: #1a2e1a;
+  border-radius: 50%;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #28a745;
 }
 
 .heroText {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
+  flex: 1;
 }
 
 .heroPill {
@@ -62,7 +102,7 @@
 
 .heroName {
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: clamp(36px, 5vw, 56px);
+  font-size: clamp(40px, 6vw, 64px);
   font-weight: 800;
   text-transform: uppercase;
   color: #ffffff;
@@ -72,9 +112,23 @@
 }
 
 .heroSport {
-  font-size: 15px;
-  color: rgba(255, 255, 255, 0.45);
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.6);
   margin: 0;
+  font-weight: 500;
+}
+
+.memberBadge {
+  display: inline-block;
+  background: rgba(40, 167, 69, 0.2);
+  border: 1px solid rgba(40, 167, 69, 0.5);
+  color: #6ee08a;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 999px;
+  width: fit-content;
+  margin-top: 8px;
 }
 
 /* ── CONTENT ── */
@@ -125,6 +179,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
+  margin-bottom: 28px;
 }
 
 .infoCard, .actionCard {
@@ -219,10 +274,315 @@
   font-family: 'DM Sans', sans-serif;
 }
 
+/* ── CAPTAIN ACTIONS ── */
+.captainActions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.transferBtn {
+  width: 100%;
+  padding: 12px;
+  background: #f97316;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.transferBtn:hover {
+  background: #ea6c0a;
+  transform: translateY(-2px);
+}
+
+.transferBtn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.deleteBtn {
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  color: #e74c3c;
+  border: 2px solid #e74c3c;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s;
+}
+
+.deleteBtn:hover {
+  background: #fdf0f0;
+  transform: translateY(-2px);
+}
+
+/* ── ROSTER ── */
+.rosterSection {
+  background: #ffffff;
+  border: 1px solid #e8e8e4;
+  border-radius: 16px;
+  padding: 28px;
+  margin-top: 16px;
+}
+
+.rosterTable {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #e8e8e4;
+  margin-top: 8px;
+}
+
+.rosterHeader {
+  background: linear-gradient(135deg, #1a2e1a, #2d4a2d);
+  color: white;
+}
+
+.rosterHeader th {
+  padding: 14px 16px;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+.captainRow {
+  background: rgba(249, 115, 22, 0.08);
+  border-left: 4px solid #f97316;
+  cursor: default;
+}
+
+.captainRow td {
+  padding: 16px 16px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #c2410c;
+  border-bottom: 1px solid #f0f0ec;
+}
+
+.memberRow {
+  background: #ffffff;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+
+.memberRow:hover {
+  background: #f4fbf5;
+}
+
+.memberRow td {
+  padding: 16px 16px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a2e1a;
+  border-bottom: 1px solid #f0f0ec;
+}
+
+.emptyRow {
+  background: #fafafa;
+}
+
+.emptySlot {
+  padding: 16px 16px;
+  font-size: 15px;
+  color: #1a2e1a;
+  font-weight: 700;
+  text-align: center;
+  border-bottom: 1px solid #f0f0ec;
+  letter-spacing: 0.02em;
+}
+
+.captainBadge {
+  display: inline-block;
+  padding: 4px 12px;
+  background: rgba(249, 115, 22, 0.15);
+  color: #f97316;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.activeBadge {
+  display: inline-block;
+  padding: 4px 12px;
+  background: rgba(40, 167, 69, 0.1);
+  color: #28a745;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── MODAL ── */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 480px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modalTitle {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #1a2e1a;
+  margin: 0 0 12px;
+}
+
+.modalText {
+  font-size: 15px;
+  color: #555;
+  line-height: 1.6;
+  margin: 0 0 24px;
+}
+
+.modalSelect {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 15px;
+  margin-bottom: 24px;
+  color: #1a2e1a;
+}
+
+.modalActions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.cancelBtn {
+  padding: 10px 20px;
+  background: #f4f4f0;
+  color: #555;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.2s;
+}
+
+.cancelBtn:hover {
+  background: #e8e8e4;
+}
+
+.confirmDeleteBtn {
+  padding: 10px 20px;
+  background: #e74c3c;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.2s;
+}
+
+.confirmDeleteBtn:hover {
+  background: #c0392b;
+}
+
+.confirmTransferBtn {
+  padding: 10px 20px;
+  background: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.2s;
+}
+
+.confirmTransferBtn:hover {
+  background: #218838;
+}
+
+.confirmTransferBtn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.sportIconBadge {
+  font-size: 72px;
+  line-height: 1;
+  flex-shrink: 0;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+}
+
+.heroBadgeRow {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.captainHeroBadge {
+  display: inline-block;
+  background: #f97316;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 8px 20px;
+  border-radius: 999px;
+  letter-spacing: 0.04em;
+}
+
+.memberHeroBadge {
+  display: inline-block;
+  background: rgba(40, 167, 69, 0.25);
+  border: 1px solid rgba(40, 167, 69, 0.6);
+  color: #6ee08a;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 8px 20px;
+  border-radius: 999px;
+  letter-spacing: 0.04em;
+}
+
 /* ── RESPONSIVE ── */
 @media (max-width: 700px) {
   .statsRow { grid-template-columns: repeat(2, 1fr); }
   .infoSection { grid-template-columns: 1fr; }
   .heroInner { flex-direction: column; text-align: center; }
   .heroPill { margin: 0 auto 4px; }
+  .rosterTable { font-size: 12px; }
 }

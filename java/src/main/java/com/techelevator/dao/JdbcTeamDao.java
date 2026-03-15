@@ -6,6 +6,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
+import com.techelevator.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,25 @@ public class JdbcTeamDao implements TeamDAO {
             throw new DaoException("Error retrieving team with ID " + teamId, e);
         }
         return team;
+    }
+
+    @Override
+    public Team getTeamByMemberId(int userId) {
+        String sql = "SELECT t.team_id, t.sport_id, t.team_name, t.user_id, t.accepting_members, " +
+                "t.number_of_members, s.sport_name " +
+                "FROM team t " +
+                "JOIN team_member tm ON t.team_id = tm.team_id " +
+                "JOIN sport s ON t.sport_id = s.sport_id " +
+                "WHERE tm.user_id = ?";
+        try {
+            SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, userId);
+            if (rs.next()) {
+                return mapRowToTeam(rs);
+            }
+        } catch (DataAccessException e) {
+            throw new DaoException("Error retrieving team for member " + userId, e);
+        }
+        return null;
     }
 
     @Override
@@ -123,5 +143,50 @@ public class JdbcTeamDao implements TeamDAO {
         // Add sportName from join
         team.setSportName(rs.getString("sport_name"));
         return team;
+    }
+
+    @Override
+    public List<User> getTeamMembers(int teamId) {
+        List<User> members = new ArrayList<>();
+        String sql = "SELECT u.user_id, u.username, u.first_name, u.last_name, u.email, u.role " +
+                "FROM users u " +
+                "JOIN team_member tm ON u.user_id = tm.user_id " +
+                "WHERE tm.team_id = ?";
+        try {
+            SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, teamId);
+            while (rs.next()) {
+                User user = new User();
+                user.setId(rs.getInt("user_id"));
+                user.setUsername(rs.getString("username"));
+                user.setFirstName(rs.getString("first_name"));
+                user.setLastName(rs.getString("last_name"));
+                user.setEmail(rs.getString("email"));
+                user.setRole(rs.getString("role"));
+                members.add(user);
+            }
+        } catch (DataAccessException e) {
+            throw new DaoException("Error retrieving members for team " + teamId, e);
+        }
+        return members;
+    }
+
+
+    @Override
+    public List<Team> getTeamsByOwnerId(int userId) {
+        List<Team> teams = new ArrayList<>();
+        String sql = "SELECT t.team_id, t.sport_id, t.team_name, t.user_id, t.accepting_members, " +
+                "t.number_of_members, s.sport_name " +
+                "FROM team t " +
+                "JOIN sport s ON t.sport_id = s.sport_id " +
+                "WHERE t.user_id = ?";
+        try {
+            SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, userId);
+            while (rs.next()) {
+                teams.add(mapRowToTeam(rs));
+            }
+        } catch (DataAccessException e) {
+            throw new DaoException("Error retrieving teams for owner " + userId, e);
+        }
+        return teams;
     }
 }

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { UserContext } from './UserContext';
 import axios from 'axios';
+import TeamService from '../services/TeamService';
 
 export default function UserProvider({ children }) {
   const [user, setUser] = useState(() => getUserAndTokenFromStorage());
@@ -10,18 +11,34 @@ export default function UserProvider({ children }) {
     const token = localStorage.getItem('token');
 
     if (user && token) {
-      // Set the token in the axios default headers
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      // Set the user to the user state
       return user;
     }
 
-    // If no user/token in local storage, return null to ensure user state variable is assigned null
     return null;
   }
 
+function refreshUser(currentUser) {
+  if (!currentUser) return;
+
+  Promise.all([
+    TeamService.getTeams(),
+    axios.get(`/team/member/${currentUser.id}`)
+  ]).then(([teamsRes, memberRes]) => {
+    const teams = teamsRes.data || [];
+    const ownedTeam = teams.find((t) => t.userId === currentUser.id);
+    const memberTeam = memberRes.data;
+    const enrichedUser = {
+      ...currentUser,
+      teamId: ownedTeam?.teamId || memberTeam?.teamId || null,
+    };
+    localStorage.setItem('user', JSON.stringify(enrichedUser));
+    setUser(enrichedUser);
+  }).catch((err) => console.error("Failed to refresh user:", err));
+}
+
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider value={{ user, setUser, refreshUser }}>
       {children}
     </UserContext.Provider>
   );

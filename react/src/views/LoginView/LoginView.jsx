@@ -2,7 +2,7 @@ import { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import AuthService from '../../services/AuthService';
-import TeamService from '../../services/TeamService';  // <-- ADD THIS
+import TeamService from '../../services/TeamService';
 import Notification from '../../components/Notification/Notification';
 import { UserContext } from '../../context/UserContext';
 import teamsBackground from '../../assets/carousel/image9.jpg';
@@ -27,10 +27,17 @@ export default function LoginView() {
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         localStorage.setItem('token', token);
 
-        return TeamService.getTeams().then((teamsRes) => {
+        return Promise.all([
+          TeamService.getTeams(),
+          axios.get(`/team/member/${user.id}`)
+        ]).then(([teamsRes, memberRes]) => {
           const teams = teamsRes.data || [];
-          const userTeam = teams.find((t) => t.userId === user.id);
-          const enrichedUser = { ...user, teamId: userTeam?.teamId || null };
+          const ownedTeam = teams.find((t) => t.userId === user.id);
+          const memberTeam = memberRes.data;
+          const enrichedUser = {
+            ...user,
+            teamId: ownedTeam?.teamId || memberTeam?.teamId || null,
+          };
           localStorage.setItem('user', JSON.stringify(enrichedUser));
           setUser(enrichedUser);
         });
@@ -40,7 +47,7 @@ export default function LoginView() {
         setNotification({ type: 'error', message });
       })
       .finally(() => navigate('/'));
-  }  // <-- THIS WAS MISSING
+  }
 
   return (
     <div className={styles.pageContainer}>

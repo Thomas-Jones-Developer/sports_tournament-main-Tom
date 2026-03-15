@@ -6,12 +6,14 @@ import axios from "axios";
 const TABS = ["Received", "Sent"];
 
 export default function InboxView() {
-  const { user } = useContext(UserContext);
+  const { user, refreshUser } = useContext(UserContext);
   const [activeTab, setActiveTab] = useState("Received");
   const [received, setReceived] = useState([]);
   const [sent, setSent] = useState([]);
   const [loading, setLoading] = useState(true);
 
+
+  
   useEffect(() => {
     if (!user) return;
 
@@ -25,6 +27,7 @@ export default function InboxView() {
         const teamsData = teamsRes.data || [];
         const teamMap = {};
         teamsData.forEach((t) => { teamMap[t.teamId] = t.teamName; });
+        
 
         const usersRes = await axios.get("/users");
         const userMap = {};
@@ -88,15 +91,16 @@ export default function InboxView() {
     fetchData();
   }, [user]);
 
-  const handleAccept = (requestId) => {
-    axios.put(`/teams/join-request/${requestId}`, { status: "ACCEPTED" })
-      .then(() => {
-        setReceived(prev => prev.map(m =>
-          m.requestId === requestId ? { ...m, status: "ACCEPTED" } : m
-        ));
-      })
-      .catch((err) => console.error("Failed to accept:", err));
-  };
+const handleAccept = (requestId) => {
+  axios.put(`/teams/join-request/${requestId}`, { status: "ACCEPTED" })
+    .then(() => {
+      setReceived(prev => prev.map(m =>
+        m.requestId === requestId ? { ...m, status: "ACCEPTED" } : m
+      ));
+      refreshUser(user); // refresh so teamId updates in nav
+    })
+    .catch((err) => console.error("Failed to accept:", err));
+};
 
   const handleDeny = (requestId) => {
     axios.put(`/teams/join-request/${requestId}`, { status: "DENIED" })

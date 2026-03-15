@@ -71,7 +71,7 @@ export default function MainNav() {
           <div className={styles.dropdownMenu}>
             <NavLink to="/browsePlayers" onClick={closeDropdown}>Browse Players</NavLink>
             {user && (
-              <NavLink to={`/publicProfile/${user.id}`} onClick={closeDropdown}>Player Profile</NavLink>
+              <NavLink to={`/publicProfile/${user.id}`} onClick={closeDropdown}>My Profile</NavLink>
             )}
           </div>
         )}
@@ -90,9 +90,7 @@ export default function MainNav() {
             </button>
             {openDropdown === 'profile' && (
               <div className={styles.dropdownMenu}>
-                <NavLink to={user.teamId ? `/SingleTeam/${user.teamId}` : '/createTeam'} onClick={closeDropdown}>
-                  {user.teamId ? 'My Team' : 'No Team Yet'}
-                </NavLink>
+                <NavLink to="/myTeams" onClick={closeDropdown}>My Teams</NavLink>
                 <NavLink to="/Inbox" onClick={closeDropdown}>Inbox</NavLink>
                 <NavLink to="/userProfile" onClick={closeDropdown}>Edit Profile</NavLink>
               </div>

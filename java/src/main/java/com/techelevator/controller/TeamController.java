@@ -116,4 +116,19 @@ public class TeamController {
         String message = "The following team was deleted: " + existingTeam.getTeamName() + " (ID: " + existingTeam.getTeamId() + ")";
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
+
+    @GetMapping("/member/{userId}")
+    public Team getTeamByMemberId(@PathVariable int userId) {
+        return teamDao.getTeamByMemberId(userId);
+    }
+
+    @GetMapping("/{teamId}/members")
+    public List<User> getTeamMembers(@PathVariable int teamId) {
+        return teamDao.getTeamMembers(teamId);
+    }
+
+    @GetMapping("/owned/{userId}")
+    public List<Team> getTeamsByOwner(@PathVariable int userId) {
+        return teamDao.getTeamsByOwnerId(userId);
+    }
 }

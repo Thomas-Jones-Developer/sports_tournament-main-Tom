@@ -3,14 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import TeamService from '../../services/TeamService';
 import styles from './CreateTeam.module.css';
 import sportsBackground from '../../assets/soccer/SoccerPics/pexels-jonathanborba-18026365.jpg';
+import { SPORT_ICONS } from '../../constants/sportsIcons';
 
 const SPORT_MAP = {
-  Soccer: '1',
-  'Volley Ball': '2',
-  Basketball: '3',
-  'Pickle Ball': '4',
-  Chess: '5',
-  'Mario Kart': '6'
+  'Soccer': '1',
+  'Baseball': '2',
+  'PickleBall': '3',
+  'Chess': '4',
+  'Esport Mario Kart': '5',
+  'Esport Pokemon Unite': '6',
 };
 
 export default function CreateTeam() {
@@ -47,7 +48,7 @@ export default function CreateTeam() {
       const res = await TeamService.createTeam(payload);
       if (res.status === 201) {
         alert('Team created successfully');
-        navigate('/');
+        navigate('/myTeams');
       }
     } catch (err) {
       console.error(err);
@@ -56,81 +57,81 @@ export default function CreateTeam() {
   };
 
   return (
-  <div className={styles.pageContainer} style={{ backgroundImage: `url(${sportsBackground})` }}>
-    <div className={styles.formContainer}>
-      <form onSubmit={submitForm} className={styles.form}>
-            <div className={styles.title}>Create Team</div>
+    <div className={styles.pageContainer} style={{ backgroundImage: `url(${sportsBackground})` }}>
+      <div className={styles.formContainer}>
+        <form onSubmit={submitForm} className={styles.form}>
+          <div className={styles.title}>Create Team</div>
 
-            <div className={styles.formControl}>
-              <label className={styles.label}>Sport</label>
-              <select
-                className={styles.input}
-                name="sportName"
-                value={team.sportName}
-                onChange={handleChange}
-                required
-              >
-                <option value="" disabled>
-                  Select your sport…
+          <div className={styles.formControl}>
+            <label className={styles.label}>Sport</label>
+            <select
+              className={styles.input}
+              name="sportName"
+              value={team.sportName}
+              onChange={handleChange}
+              required
+            >
+              <option value="" disabled>
+                Select your sport…
+              </option>
+              {Object.keys(SPORT_MAP).map((sport) => (
+                <option key={sport} value={sport}>
+                  {SPORT_ICONS[SPORT_MAP[sport]]} {sport}
                 </option>
-                {Object.keys(SPORT_MAP).map((sport) => (
-                  <option key={sport} value={sport}>
-                    {sport}
-                  </option>
-                ))}
-              </select>
-            </div>
+              ))}
+            </select>
+          </div>
 
-            <div className={styles.formControl}>
-              <label className={styles.label}>Team Name</label>
+          <div className={styles.formControl}>
+            <label className={styles.label}>Team Name</label>
+            <input
+              className={styles.input}
+              type="text"
+              name="teamName"
+              value={team.teamName}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className={styles.formControl}>
+            <label className={styles.label}>Accepting New Members?</label>
+            <label className={styles.checkboxRow}>
               <input
-                className={styles.input}
-                type="text"
-                name="teamName"
-                value={team.teamName}
-                onChange={handleChange}
-                required
+                type="checkbox"
+                name="acceptingMembers"
+                checked={team.acceptingMembers}
+                onChange={handleCheckbox}
               />
-            </div>
+              <span>Yes, we are recruiting</span>
+            </label>
+          </div>
 
-            <div className={styles.formControl}>
-              <label className={styles.label}>Accepting New Members?</label>
-              <label className={styles.checkboxRow}>
-                <input
-                  type="checkbox"
-                  name="acceptingMembers"
-                  checked={team.acceptingMembers}
-                  onChange={handleCheckbox}
-                />
-                <span>Yes, we are recruiting</span>
-              </label>
-            </div>
-
-            <div className={styles.formControl}>
-              <label className={styles.label}>Number of Members</label>
-              <select
-                className={styles.input}
-                name="numberOfMembers"
-                value={team.numberOfMembers}
-                onChange={handleChange}
-                required
-              >
-                <option value="" disabled>
-                  Select team size…
+          <div className={styles.formControl}>
+            <label className={styles.label}>Number of Members</label>
+            <select
+              className={styles.input}
+              name="numberOfMembers"
+              value={team.numberOfMembers}
+              onChange={handleChange}
+              required
+            >
+              <option value="" disabled>
+                Select team size…
+              </option>
+              {Array.from({ length: 20 }, (_, i) => i + 1).map((n) => (
+                <option key={n} value={n}>
+                  {n}
                 </option>
-                {Array.from({ length: 20 }, (_, i) => i + 1).map((n) => (
-                  <option key={n} value={n}>
-                    {n}
-                  </option>
-                ))}
-              </select>
-            </div>
+              ))}
+            </select>
+          </div>
 
-            <button type="submit" className={styles.submitButton}>
-              Create Team
-            </button>
-          </form>
-        </div>
+          <button type="submit" className={styles.submitButton}>
+            Create Team
+          </button>
+        </form>
       </div>
+    </div>
   );
 }
