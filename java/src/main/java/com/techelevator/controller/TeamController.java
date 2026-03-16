@@ -131,4 +131,10 @@ public class TeamController {
     public List<Team> getTeamsByOwner(@PathVariable int userId) {
         return teamDao.getTeamsByOwnerId(userId);
     }
+
+    @DeleteMapping("/{teamId}/members/{userId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void leaveTeam(@PathVariable int teamId, @PathVariable int userId) {
+        teamDao.removeTeamMember(teamId, userId);
+    }
 }

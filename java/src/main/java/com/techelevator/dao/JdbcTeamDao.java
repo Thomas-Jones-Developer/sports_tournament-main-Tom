@@ -189,4 +189,22 @@ public class JdbcTeamDao implements TeamDAO {
         }
         return teams;
     }
+
+    @Override
+    public void removeTeamMember(int teamId, int userId) {
+        String sql = "DELETE FROM team_member WHERE team_id = ? AND user_id = ?";
+        try {
+            jdbcTemplate.update(sql, teamId, userId);
+        } catch (DataAccessException e) {
+            throw new DaoException("Error removing member from team", e);
+        }
+
+        // Also clean up their join request so they can request again
+        String cleanupSql = "DELETE FROM team_join_request WHERE team_id = ? AND user_id = ?";
+        try {
+            jdbcTemplate.update(cleanupSql, teamId, userId);
+        } catch (DataAccessException e) {
+            throw new DaoException("Error cleaning up join request", e);
+        }
+    }
 }

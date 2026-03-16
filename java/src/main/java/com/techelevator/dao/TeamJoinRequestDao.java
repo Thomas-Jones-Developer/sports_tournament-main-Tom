@@ -13,4 +13,6 @@ public interface TeamJoinRequestDao {
     TeamJoinRequest getRequestById(int requestId);
     List<TeamJoinRequest> getAllRequestsForTeam(int teamId);
     List<TeamJoinRequest> getInvitesByTeam(int teamId);
+    void hideSent(int requestId);
+    void hideReceived(int requestId);
 }

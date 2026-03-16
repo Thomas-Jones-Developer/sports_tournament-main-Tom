@@ -2,16 +2,19 @@ import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthService from "../../services/AuthService";
 import { UserContext } from "../../context/UserContext";
+import axios from "axios";
 import styles from "./UserProfileView.module.css";
 
 export default function UserProfileView() {
   const navigate = useNavigate();
-  const { user: authUser, setUser } = useContext(UserContext);
+  const { user: authUser, setUser, refreshUser } = useContext(UserContext);
 
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
+  const [memberTeam, setMemberTeam] = useState(null);
+  const [ownedTeams, setOwnedTeams] = useState([]);
   const [profile, setProfile] = useState({
     username: "",
     firstName: "",
@@ -23,9 +26,14 @@ export default function UserProfileView() {
   useEffect(() => {
     if (!authUser?.id) { navigate("/login"); return; }
     setLoading(true);
-    AuthService.getUserProfile(authUser.id)
-      .then((res) => {
-        const d = res?.data || {};
+
+    Promise.all([
+      AuthService.getUserProfile(authUser.id),
+      axios.get(`/team/member/${authUser.id}`),
+      axios.get(`/team/owned/${authUser.id}`)
+    ])
+      .then(([profileRes, memberRes, ownedRes]) => {
+        const d = profileRes?.data || {};
         setProfile({
           username: d.username || "",
           firstName: d.firstName || "",
@@ -33,6 +41,8 @@ export default function UserProfileView() {
           email: d.email || "",
           role: d.authorities?.[0]?.name || "",
         });
+        setMemberTeam(memberRes.data || null);
+        setOwnedTeams(ownedRes.data || []);
       })
       .catch((err) => {
         alert(err.response?.data?.message || "Failed to load your profile.");
@@ -77,9 +87,15 @@ export default function UserProfileView() {
   }
 
   async function handleLeaveTeam() {
-    // Wire up to your TeamService when ready
-    alert("Leave team functionality coming soon.");
-    setShowLeaveConfirm(false);
+    if (!memberTeam) return;
+    try {
+      await axios.delete(`/team/${memberTeam.teamId}/members/${authUser.id}`);
+      setMemberTeam(null);
+      setShowLeaveConfirm(false);
+      refreshUser(authUser);
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to leave team.");
+    }
   }
 
   if (loading) return <div className={styles.loading}>Loading profile...</div>;
@@ -152,23 +168,27 @@ export default function UserProfileView() {
                 <div className={styles.infoGrid}>
                   <div className={styles.infoRow}>
                     <span className={styles.infoLabel}>Member of</span>
-                    <span className={styles.infoValue}>{authUser?.teamName || "No team"}</span>
+                    <span className={styles.infoValue}>{memberTeam?.teamName || "No team"}</span>
                   </div>
                   <div className={styles.infoRow}>
-                    <span className={styles.infoLabel}>Team Captain of</span>
-                    <span className={styles.infoValue}>{authUser?.captainOf || "None"}</span>
+                    <span className={styles.infoLabel}>Owns</span>
+                    <span className={styles.infoValue}>
+                      {ownedTeams.length > 0
+                        ? ownedTeams.map(t => t.teamName).join(", ")
+                        : "No teams"}
+                    </span>
                   </div>
                 </div>
 
                 {/* Leave Team */}
-                {authUser?.teamId && !showLeaveConfirm && (
+                {memberTeam && !showLeaveConfirm && (
                   <button className={styles.leaveBtn} onClick={() => setShowLeaveConfirm(true)}>
-                    Leave Team
+                    Leave {memberTeam.teamName}
                   </button>
                 )}
                 {showLeaveConfirm && (
                   <div className={styles.confirmBox}>
-                    <p className={styles.confirmText}>Are you sure you want to leave your team?</p>
+                    <p className={styles.confirmText}>Are you sure you want to leave {memberTeam?.teamName}?</p>
                     <div className={styles.confirmActions}>
                       <button className={styles.confirmDanger} onClick={handleLeaveTeam}>Yes, Leave</button>
                       <button className={styles.confirmCancel} onClick={() => setShowLeaveConfirm(false)}>Cancel</button>

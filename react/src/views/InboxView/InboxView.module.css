@@ -286,6 +286,7 @@
 /* ── STATUS PILL ── */
 .statusPill {
   display: inline-block;
+  text-align: center;
   padding: 6px 14px;
   border-radius: 999px;
   font-size: 12px;
@@ -335,4 +336,41 @@
   color: #e74c3c;
   border-color: #e74c3c;
   background: #fdf0f0;
+}
+
+.challengeCard {
+  background: #ffffff;
+  border: 1px solid #fed7aa;
+  border-left: 4px solid #f97316;
+  border-radius: 14px;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.challengeCard:hover {
+  box-shadow: 0 4px 16px rgba(249, 115, 22, 0.15);
+  transform: translateY(-1px);
+}
+
+.challengeAvatar {
+  background: #006426 !important;
+  font-size: 20px;
+}
+
+.challengeLabel {
+  display: inline-block;
+  background: #f97316;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 4px 12px;
+  border-radius: 999px;
+  margin-bottom: 6px;
+  width: fit-content;
 }

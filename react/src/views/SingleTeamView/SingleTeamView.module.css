@@ -47,7 +47,6 @@
   flex-shrink: 0;
 }
 
-
 .avatarContainer {
   position: relative;
   flex-shrink: 0;
@@ -576,6 +575,82 @@
   padding: 8px 20px;
   border-radius: 999px;
   letter-spacing: 0.04em;
+}
+
+.challengeBtn {
+  width: 100%;
+  padding: 12px;
+  background: #f97316;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.challengeBtn:hover {
+  background: #ea6c0a;
+  transform: translateY(-2px);
+}
+
+.challengedBtn {
+  width: 100%;
+  padding: 12px;
+  background: #f4f4f0;
+  color: #f97316;
+  border: 2px solid #f97316;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: default;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.confirmChallengeBtn {
+  padding: 10px 20px;
+  background: #f97316;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.2s;
+}
+
+.confirmChallengeBtn:hover {
+  background: #ea6c0a;
+}
+
+.challengePreview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+  background: #fff8f3;
+  border: 1px solid #fed7aa;
+  border-radius: 12px;
+  margin-bottom: 24px;
+}
+
+.challengeTeam {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a2e1a;
+  text-transform: uppercase;
+}
+
+.challengeVs {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  color: #f97316;
 }
 
 /* ── RESPONSIVE ── */

@@ -17,108 +17,151 @@ export default function InboxView() {
   useEffect(() => {
     if (!user) return;
 
-    const fetchData = async () => {
-      console.log("user.teamId:", user.teamId);
-      console.log("user.id:", user.id);
+const fetchData = async () => {
+  try {
+    const teamsRes = await axios.get("/team");
+    const teamsData = teamsRes.data || [];
+    const teamMap = {};
+    teamsData.forEach((t) => { teamMap[t.teamId] = t.teamName; });
 
-      try {
-        // Fetch teams and users first for enrichment
-        const teamsRes = await axios.get("/team");
-        const teamsData = teamsRes.data || [];
-        const teamMap = {};
-        teamsData.forEach((t) => { teamMap[t.teamId] = t.teamName; });
-        
+    const usersRes = await axios.get("/users");
+    const userMap = {};
+    (usersRes.data || []).forEach((u) => { userMap[u.id] = u; });
 
-        const usersRes = await axios.get("/users");
-        const userMap = {};
-        (usersRes.data || []).forEach((u) => { userMap[u.id] = u; });
+    // Sent: join requests this user made
+    const sentRes = await axios.get(`/teams/user/${user.id}/join-requests`);
+    const enrichedSent = (sentRes.data || []).map((r) => ({
+      ...r,
+      teamName: teamMap[r.teamId] || `Team ${r.teamId}`,
+      toName: teamMap[r.teamId] || `Team ${r.teamId}`,
+      messageType: "JOIN_REQUEST",
+    }));
 
-        // Sent: join requests this user made (player requesting a team)
-        const sentRes = await axios.get(`/teams/user/${user.id}/join-requests`);
-        console.log("Sent data:", sentRes.data);
-        const enrichedSent = (sentRes.data || []).map((r) => ({
-          ...r,
-          teamName: teamMap[r.teamId] || `Team ${r.teamId}`,
-          toName: teamMap[r.teamId] || `Team ${r.teamId}`,
-        }));
+    // If owner, also fetch invites their team sent
+    let allSent = enrichedSent;
+    if (user.teamId) {
+      const invitesSentRes = await axios.get(`/teams/${user.teamId}/sent-invites`);
+      const enrichedInvitesSent = (invitesSentRes.data || []).map((r) => ({
+        ...r,
+        teamName: teamMap[r.teamId] || `Team ${r.teamId}`,
+        toName: userMap[r.userId]
+          ? `${userMap[r.userId].firstName} ${userMap[r.userId].lastName}`
+          : `User ${r.userId}`,
+        messageType: "INVITE",
+      }));
+      allSent = [...enrichedSent, ...enrichedInvitesSent];
 
-        // If owner, also fetch invites their team sent to players
-        let allSent = enrichedSent;
-        if (user.teamId) {
-          const invitesSentRes = await axios.get(`/teams/${user.teamId}/sent-invites`);
-          const enrichedInvitesSent = (invitesSentRes.data || []).map((r) => ({
-            ...r,
-            teamName: teamMap[r.teamId] || `Team ${r.teamId}`,
-            toName: userMap[r.userId]
-              ? `${userMap[r.userId].firstName} ${userMap[r.userId].lastName}`
-              : `User ${r.userId}`,
-          }));
-          allSent = [...enrichedSent, ...enrichedInvitesSent];
-        }
-        setSent(allSent);
+      // Also fetch challenges sent by this user's team
+      const challengesSentRes = await axios.get(`/challenges/sent/${user.teamId}`);
+      const enrichedChallengesSent = (challengesSentRes.data || []).map((c) => ({
+        ...c,
+        requestId: c.challengeId,
+        teamName: teamMap[c.challengedTeamId] || `Team ${c.challengedTeamId}`,
+        toName: teamMap[c.challengedTeamId] || `Team ${c.challengedTeamId}`,
+        requestDate: c.challengeDate,
+        messageType: "CHALLENGE",
+      }));
+      allSent = [...allSent, ...enrichedChallengesSent];
+    }
+    setSent(allSent);
 
-        // Received: two cases
-        if (user.teamId) {
-          // Owner — show join requests sent to their team
-          const receivedRes = await axios.get(`/teams/${user.teamId}/join-requests`);
-          const enrichedReceived = (receivedRes.data || []).map((r) => ({
-            ...r,
-            fromName: userMap[r.userId]
-              ? `${userMap[r.userId].firstName} ${userMap[r.userId].lastName}`
-              : `User ${r.userId}`,
-            fromInitial: userMap[r.userId]?.firstName?.charAt(0) || "?",
-            teamName: teamMap[r.teamId] || `Team ${r.teamId}`,
-          }));
-          setReceived(enrichedReceived);
-        } else {
-          // Player — show invites sent to them by team owners
-          const invitesRes = await axios.get(`/teams/invites/user/${user.id}`);
-          const enrichedInvites = (invitesRes.data || []).map((r) => ({
-            ...r,
-            fromName: teamMap[r.teamId] || `Team ${r.teamId}`,
-            fromInitial: (teamMap[r.teamId] || "T").charAt(0),
-            teamName: teamMap[r.teamId] || `Team ${r.teamId}`,
-          }));
-          setReceived(enrichedInvites);
-        }
-      } catch (err) {
-        console.error("Failed to load inbox:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+    // Received
+    if (user.teamId) {
+      // Owner — show join requests and challenges received
+      const receivedRes = await axios.get(`/teams/${user.teamId}/join-requests`);
+      const enrichedReceived = (receivedRes.data || []).map((r) => ({
+        ...r,
+        fromName: userMap[r.userId]
+          ? `${userMap[r.userId].firstName} ${userMap[r.userId].lastName}`
+          : `User ${r.userId}`,
+        fromInitial: userMap[r.userId]?.firstName?.charAt(0) || "?",
+        teamName: teamMap[r.teamId] || `Team ${r.teamId}`,
+        messageType: "JOIN_REQUEST",
+      }));
+
+      // Also fetch challenges received by this team
+      const challengesReceivedRes = await axios.get(`/challenges/received/${user.teamId}`);
+      const enrichedChallengesReceived = (challengesReceivedRes.data || []).map((c) => ({
+        ...c,
+        requestId: c.challengeId,
+        fromName: teamMap[c.challengerTeamId] || `Team ${c.challengerTeamId}`,
+        fromInitial: (teamMap[c.challengerTeamId] || "T").charAt(0),
+        teamName: teamMap[c.challengedTeamId] || `Team ${c.challengedTeamId}`,
+        requestDate: c.challengeDate,
+        messageType: "CHALLENGE",
+      }));
+
+      setReceived([...enrichedReceived, ...enrichedChallengesReceived]);
+    } else {
+      // Player — show invites
+      const invitesRes = await axios.get(`/teams/invites/user/${user.id}`);
+      const enrichedInvites = (invitesRes.data || []).map((r) => ({
+        ...r,
+        fromName: teamMap[r.teamId] || `Team ${r.teamId}`,
+        fromInitial: (teamMap[r.teamId] || "T").charAt(0),
+        teamName: teamMap[r.teamId] || `Team ${r.teamId}`,
+        messageType: "INVITE",
+      }));
+      setReceived(enrichedInvites);
+    }
+  } catch (err) {
+    console.error("Failed to load inbox:", err);
+  } finally {
+    setLoading(false);
+  }
+};
 
     fetchData();
   }, [user]);
 
-const handleAccept = (requestId) => {
-  axios.put(`/teams/join-request/${requestId}`, { status: "ACCEPTED" })
+const handleAccept = (requestId, messageType) => {
+  const url = messageType === "CHALLENGE"
+    ? `/challenges/${requestId}`
+    : `/teams/join-request/${requestId}`;
+  axios.put(url, { status: "ACCEPTED" })
     .then(() => {
       setReceived(prev => prev.map(m =>
         m.requestId === requestId ? { ...m, status: "ACCEPTED" } : m
       ));
-      refreshUser(user); // refresh so teamId updates in nav
+      if (messageType !== "CHALLENGE") refreshUser(user);
     })
     .catch((err) => console.error("Failed to accept:", err));
 };
 
-  const handleDeny = (requestId) => {
-    axios.put(`/teams/join-request/${requestId}`, { status: "DENIED" })
-      .then(() => {
-        setReceived(prev => prev.map(m =>
-          m.requestId === requestId ? { ...m, status: "DENIED" } : m
-        ));
-      })
-      .catch((err) => console.error("Failed to deny:", err));
-  };
+const handleDeny = (requestId, messageType) => {
+  const url = messageType === "CHALLENGE"
+    ? `/challenges/${requestId}`
+    : `/teams/join-request/${requestId}`;
+  axios.put(url, { status: "DENIED" })
+    .then(() => {
+      setReceived(prev => prev.map(m =>
+        m.requestId === requestId ? { ...m, status: "DENIED" } : m
+      ));
+    })
+    .catch((err) => console.error("Failed to deny:", err));
+};
 
-  const handleDeleteReceived = (requestId) => {
-    setReceived(prev => prev.filter(m => m.requestId !== requestId));
-  };
+const handleDeleteReceived = (requestId, messageType) => {
+  const url = messageType === "CHALLENGE"
+    ? `/challenges/${requestId}/hide-received`
+    : `/teams/join-request/${requestId}/hide-received`;
+  axios.put(url)
+    .then(() => {
+      setReceived(prev => prev.filter(m => m.requestId !== requestId));
+    })
+    .catch((err) => console.error("Failed to hide message:", err));
+};
 
-  const handleDeleteSent = (requestId) => {
-    setSent(prev => prev.filter(m => m.requestId !== requestId));
-  };
+const handleDeleteSent = (requestId, messageType) => {
+  const url = messageType === "CHALLENGE"
+    ? `/challenges/${requestId}/hide-sent`
+    : `/teams/join-request/${requestId}/hide-sent`;
+  axios.put(url)
+    .then(() => {
+      setSent(prev => prev.filter(m => m.requestId !== requestId));
+    })
+    .catch((err) => console.error("Failed to hide message:", err));
+};
 
   const unreadCount = received.filter(m => m.status === "PENDING").length;
 
@@ -165,74 +208,110 @@ const handleAccept = (requestId) => {
         </div>
 
         {/* Received Messages */}
-        {activeTab === "Received" && (
-          <div className={styles.messageList}>
-            {received.length === 0 ? (
-              <div className={styles.empty}>
-                {user.teamId ? "No pending requests for your team." : "No invites received yet."}
+{activeTab === "Received" && (
+  <div className={styles.messageList}>
+    {received.length === 0 ? (
+      <div className={styles.empty}>
+        {user.teamId ? "No pending requests for your team." : "No invites received yet."}
+      </div>
+    ) : (
+      received.map(msg => (
+        <div
+          key={msg.requestId}
+          className={`${styles.messageCard} ${
+            msg.messageType === "CHALLENGE"
+              ? styles.challengeCard
+              : styles[msg.status?.toLowerCase()]
+          }`}
+        >
+          <div className={styles.messageLeft}>
+            <div className={`${styles.messageAvatar} ${msg.messageType === "CHALLENGE" ? styles.challengeAvatar : ""}`}>
+              {msg.messageType === "CHALLENGE" ? "C" : msg.fromInitial}
+            </div>
+            <div className={styles.messageBody}>
+              {msg.messageType === "CHALLENGE" && (
+                <div className={styles.challengeLabel}>CHALLENGE ISSUED</div>
+              )}
+              <div className={styles.messageFrom}>{msg.fromName}</div>
+              <div className={styles.messageTeam}>
+                {msg.messageType === "CHALLENGE"
+                  ? `${msg.fromName} wants to face your team in a match`
+                  : `Re: ${msg.teamName}`}
               </div>
-            ) : (
-              received.map(msg => (
-                <div key={msg.requestId} className={`${styles.messageCard} ${styles[msg.status?.toLowerCase()]}`}>
-                  <div className={styles.messageLeft}>
-                    <div className={styles.messageAvatar}>{msg.fromInitial}</div>
-                    <div className={styles.messageBody}>
-                      <div className={styles.messageFrom}>{msg.fromName}</div>
-                      <div className={styles.messageTeam}>Re: {msg.teamName}</div>
-                      <div className={styles.messageText}>
-                        {user.teamId ? "Wants to join your team" : "You've been invited to join this team"}
-                      </div>
-                      <div className={styles.messageDate}>{new Date(msg.requestDate).toLocaleDateString()}</div>
-                    </div>
-                  </div>
-                  <div className={styles.messageActions}>
-                    {msg.status === "PENDING" ? (
-                      <>
-                        <button className={styles.acceptBtn} onClick={() => handleAccept(msg.requestId)}>Accept</button>
-                        <button className={styles.denyBtn} onClick={() => handleDeny(msg.requestId)}>Deny</button>
-                      </>
-                    ) : (
-                      <span className={`${styles.statusPill} ${styles[msg.status?.toLowerCase()]}`}>
-                        {msg.status.charAt(0) + msg.status.slice(1).toLowerCase()}
-                      </span>
-                    )}
-                    <button className={styles.deleteBtn} onClick={() => handleDeleteReceived(msg.requestId)}>Delete</button>
-                  </div>
-                </div>
-              ))
-            )}
+              <div className={styles.messageText}>
+                {msg.messageType === "CHALLENGE"
+                  ? "Accept or deny this challenge"
+                  : user.teamId ? "Wants to join your team" : "You've been invited to join this team"}
+              </div>
+              <div className={styles.messageDate}>{new Date(msg.requestDate).toLocaleString()}</div>
+            </div>
           </div>
-        )}
+          <div className={styles.messageActions}>
+            {msg.status === "PENDING" ? (
+              <>
+                <button className={styles.acceptBtn} onClick={() => handleAccept(msg.requestId, msg.messageType)}>Accept</button>
+                <button className={styles.denyBtn} onClick={() => handleDeny(msg.requestId, msg.messageType)}>Deny</button>
+              </>
+            ) : (
+              <span className={`${styles.statusPill} ${styles[msg.status?.toLowerCase()]}`}>
+                {msg.status.charAt(0) + msg.status.slice(1).toLowerCase()}
+              </span>
+            )}
+            <button className={styles.deleteBtn} onClick={() => handleDeleteReceived(msg.requestId, msg.messageType)}>Delete</button>
+          </div>
+        </div>
+      ))
+    )}
+  </div>
+)}
 
         {/* Sent Messages */}
         {activeTab === "Sent" && (
-          <div className={styles.messageList}>
-            {sent.length === 0 ? (
-              <div className={styles.empty}>No requests sent yet.</div>
-            ) : (
-              sent.map(msg => (
-                <div key={msg.requestId} className={`${styles.messageCard} ${styles[msg.status?.toLowerCase()]}`}>
-                  <div className={styles.messageLeft}>
-                    <div className={styles.messageAvatar}>→</div>
-                    <div className={styles.messageBody}>
-                      <div className={styles.messageFrom}>To: {msg.teamName}</div>
-                      <div className={styles.messageFrom}>
-                        {msg.type === "INVITE" ? `To: ${msg.toName}` : `To: ${msg.teamName}`}
-                      </div>
-                      <div className={styles.messageDate}>Sent: {new Date(msg.requestDate).toLocaleDateString()}</div>
-                    </div>
-                  </div>
-                  <div className={styles.messageActions}>
-                    <span className={`${styles.statusPill} ${styles[msg.status?.toLowerCase()]}`}>
-                      {msg.status.charAt(0) + msg.status.slice(1).toLowerCase()}
-                    </span>
-                    <button className={styles.deleteBtn} onClick={() => handleDeleteSent(msg.requestId)}>Delete</button>
-                  </div>
-                </div>
-              ))
-            )}
+  <div className={styles.messageList}>
+    {sent.length === 0 ? (
+      <div className={styles.empty}>No requests sent yet.</div>
+    ) : (
+      sent.map(msg => (
+        <div
+          key={msg.requestId}
+          className={`${styles.messageCard} ${
+            msg.messageType === "CHALLENGE"
+              ? styles.challengeCard
+              : styles[msg.status?.toLowerCase()]
+          }`}
+        >
+          <div className={styles.messageLeft}>
+            <div className={`${styles.messageAvatar} ${msg.messageType === "CHALLENGE" ? styles.challengeAvatar : ""}`}>
+              {msg.messageType === "CHALLENGE" ? "⚔️" : "→"}
+            </div>
+            <div className={styles.messageBody}>
+              {msg.messageType === "CHALLENGE" && (
+                <div className={styles.challengeLabel}>⚔️ CHALLENGE ISSUED</div>
+              )}
+              <div className={styles.messageFrom}>
+                {msg.messageType === "INVITE" ? `To: ${msg.toName}` : `To: ${msg.teamName}`}
+              </div>
+              <div className={styles.messageText}>
+                {msg.messageType === "CHALLENGE"
+                  ? "You challenged this team to a match"
+                  : msg.messageType === "INVITE"
+                  ? "Invited player to join team"
+                  : "Request to join team"}
+              </div>
+              <div className={styles.messageDate}>Sent: {new Date(msg.requestDate).toLocaleString()}</div>
+            </div>
           </div>
-        )}
+          <div className={styles.messageActions}>
+            <span className={`${styles.statusPill} ${styles[msg.status?.toLowerCase()]}`}>
+              {msg.status.charAt(0) + msg.status.slice(1).toLowerCase()}
+            </span>
+            <button className={styles.deleteBtn} onClick={() => handleDeleteSent(msg.requestId, msg.messageType)}>Delete</button>
+          </div>
+        </div>
+      ))
+    )}
+  </div>
+)}
 
       </div>
     </div>

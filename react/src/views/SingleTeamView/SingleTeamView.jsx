@@ -17,10 +17,12 @@ export default function SingleTeamView() {
   const [captain, setCaptain] = useState(null);
   const [loading, setLoading] = useState(true);
   const [requested, setRequested] = useState(false);
+  const [challenged, setChallenged] = useState(false);
 
   // Modal state
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showTransferModal, setShowTransferModal] = useState(false);
+  const [showChallengeModal, setShowChallengeModal] = useState(false);
   const [selectedTransferUser, setSelectedTransferUser] = useState("");
 
   useEffect(() => {
@@ -78,8 +80,24 @@ export default function SingleTeamView() {
       .catch((err) => console.error("Failed to transfer team:", err));
   };
 
+  const handleChallenge = () => {
+    axios.post(`/challenges`, {
+      challengerTeamId: currentUser.teamId,
+      challengedTeamId: parseInt(id)
+    })
+      .then(() => {
+        setChallenged(true);
+        setShowChallengeModal(false);
+      })
+      .catch((err) => {
+        console.error("Failed to send challenge:", err);
+        alert("Failed to send challenge.");
+      });
+  };
+
   const isCaptain = currentUser && team && currentUser.id === team.userId;
   const isMember = currentUser && members.some(m => m.id === currentUser.id);
+  const isExternalCaptain = currentUser && !isCaptain && !isMember && currentUser.teamId;
 
   if (loading) return <div className={styles.loading}>Loading team info...</div>;
   if (!team) return <div className={styles.loading}>Team not found.</div>;
@@ -100,12 +118,8 @@ export default function SingleTeamView() {
               Are you sure you want to delete <strong>{team.teamName}</strong>? This action cannot be undone and will remove all members from the team.
             </p>
             <div className={styles.modalActions}>
-              <button className={styles.cancelBtn} onClick={() => setShowDeleteModal(false)}>
-                Cancel
-              </button>
-              <button className={styles.confirmDeleteBtn} onClick={handleDelete}>
-                Yes, Delete Team
-              </button>
+              <button className={styles.cancelBtn} onClick={() => setShowDeleteModal(false)}>Cancel</button>
+              <button className={styles.confirmDeleteBtn} onClick={handleDelete}>Yes, Delete Team</button>
             </div>
           </div>
         </div>
@@ -132,14 +146,8 @@ export default function SingleTeamView() {
               ))}
             </select>
             <div className={styles.modalActions}>
-              <button className={styles.cancelBtn} onClick={() => setShowTransferModal(false)}>
-                Cancel
-              </button>
-              <button
-                className={styles.confirmTransferBtn}
-                onClick={handleTransfer}
-                disabled={!selectedTransferUser}
-              >
+              <button className={styles.cancelBtn} onClick={() => setShowTransferModal(false)}>Cancel</button>
+              <button className={styles.confirmTransferBtn} onClick={handleTransfer} disabled={!selectedTransferUser}>
                 Yes, Transfer Ownership
               </button>
             </div>
@@ -147,30 +155,49 @@ export default function SingleTeamView() {
         </div>
       )}
 
-{/* Hero */}
-<div className={styles.hero}>
-  <div className={styles.heroInner}>
-    <div className={styles.heroLeft}>
-      <div className={styles.avatarContainer}>
-        <img src={UserImage} alt="Team" className={styles.avatar} />
-        <div className={styles.sportEmoji}>{SPORT_ICONS[team.sportId]}</div>
-      </div>
-      <div className={styles.heroText}>
-        <h1 className={styles.heroName}>{team.teamName}</h1>
-        <p className={styles.heroSport}>{team.sportName || "Sport TBD"}</p>
-      </div>
-    </div>
-    <div className={styles.heroRight}>
-      <div className={styles.heroPill}>Team Profile</div>
-      {isCaptain && (
-        <div className={styles.captainHeroBadge}>⭐ Captain</div>
+      {/* Challenge Modal */}
+      {showChallengeModal && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <h2 className={styles.modalTitle}>⚔️ Issue a Challenge</h2>
+            <p className={styles.modalText}>
+              You are about to challenge <strong>{team.teamName}</strong> to a match on behalf of your team. They will receive this challenge in their inbox and can accept or deny it.
+            </p>
+            <div className={styles.challengePreview}>
+              <div className={styles.challengeTeam}>Your Team</div>
+              <div className={styles.challengeVs}>VS</div>
+              <div className={styles.challengeTeam}>{team.teamName}</div>
+            </div>
+            <div className={styles.modalActions}>
+              <button className={styles.cancelBtn} onClick={() => setShowChallengeModal(false)}>Cancel</button>
+              <button className={styles.confirmChallengeBtn} onClick={handleChallenge}>
+                ⚔️ This looks good, send it!
+              </button>
+            </div>
+          </div>
+        </div>
       )}
-      {isMember && !isCaptain && (
-        <div className={styles.memberHeroBadge}>✓ Team Member</div>
-      )}
-    </div>
-  </div>
-</div>
+
+      {/* Hero */}
+      <div className={styles.hero}>
+        <div className={styles.heroInner}>
+          <div className={styles.heroLeft}>
+            <div className={styles.avatarContainer}>
+              <img src={UserImage} alt="Team" className={styles.avatar} />
+              <div className={styles.sportEmoji}>{SPORT_ICONS[team.sportId]}</div>
+            </div>
+            <div className={styles.heroText}>
+              <h1 className={styles.heroName}>{team.teamName}</h1>
+              <p className={styles.heroSport}>{team.sportName || "Sport TBD"}</p>
+            </div>
+          </div>
+          <div className={styles.heroRight}>
+            <div className={styles.heroPill}>Team Profile</div>
+            {isCaptain && <div className={styles.captainHeroBadge}>You are Captain</div>}
+            {isMember && !isCaptain && <div className={styles.memberHeroBadge}>✓ Team Member</div>}
+          </div>
+        </div>
+      </div>
 
       {/* Content */}
       <div className={styles.content}>
@@ -227,34 +254,28 @@ export default function SingleTeamView() {
 
           <div className={styles.actionCard}>
             <h2 className={styles.infoTitle}>
-              {isCaptain ? "Manage Team" : "Join This Team"}
+              {isCaptain ? "Manage Team" : "Actions"}
             </h2>
             {isCaptain ? (
               <div className={styles.captainActions}>
                 <p className={styles.actionDesc}>As captain you can transfer ownership or delete this team.</p>
-                <button
-                  className={styles.transferBtn}
-                  onClick={() => setShowTransferModal(true)}
-                  disabled={members.length === 0}
-                >
+                <button className={styles.transferBtn} onClick={() => setShowTransferModal(true)} disabled={members.length === 0}>
                   Transfer Ownership
                 </button>
-                <button
-                  className={styles.deleteBtn}
-                  onClick={() => setShowDeleteModal(true)}
-                >
+                <button className={styles.deleteBtn} onClick={() => setShowDeleteModal(true)}>
                   Delete Team
                 </button>
               </div>
             ) : (
-              <>
+              <div className={styles.captainActions}>
+                {/* Join section */}
                 <p className={styles.actionDesc}>
                   {team.acceptingMembers
-                    ? `${team.teamName} is actively looking for new players. Send a request to join.`
+                    ? `${team.teamName} is actively looking for new players.`
                     : `${team.teamName} is not currently accepting new members.`}
                 </p>
                 {!currentUser ? (
-                  <p className={styles.actionDesc}>Log in to request to join a team.</p>
+                  <p className={styles.actionDesc}>Log in to interact with this team.</p>
                 ) : isMember ? (
                   <p className={styles.actionDesc}>You are already part of this team.</p>
                 ) : (
@@ -266,7 +287,22 @@ export default function SingleTeamView() {
                     {requested ? "✓ Request Sent" : "Request to Join"}
                   </button>
                 )}
-              </>
+
+                {/* Challenge section — only for external captains */}
+                {isExternalCaptain && (
+                  <>
+                    <hr style={{ margin: "16px 0", border: "none", borderTop: "1px solid #f0f0ec" }} />
+                    <p className={styles.actionDesc}>Think your team can take them on?</p>
+                    <button
+                      className={challenged ? styles.challengedBtn : styles.challengeBtn}
+                      onClick={() => setShowChallengeModal(true)}
+                      disabled={challenged}
+                    >
+                      {challenged ? "Challenge Sent" : "Challenge Team"}
+                    </button>
+                  </>
+                )}
+              </div>
             )}
           </div>
         </div>
@@ -289,7 +325,7 @@ export default function SingleTeamView() {
                   <td>{captain.firstName} {captain.lastName}</td>
                   <td>@{captain.username}</td>
                   <td>{captain.role?.replace("ROLE_", "") || "—"}</td>
-                  <td><span className={styles.captainBadge}>⭐ Captain</span></td>
+                  <td><span className={styles.captainBadge}>Captain</span></td>
                 </tr>
               )}
               {members.map((member) => (

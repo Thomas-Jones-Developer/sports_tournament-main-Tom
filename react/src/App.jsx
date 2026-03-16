@@ -15,6 +15,10 @@ import BrowsePlayersView from './views/BrowsePlayersView/BrowsePlayersView.jsx';
 import CreateTeamView from './views/CreateTeamView/CreateTeamView.jsx';
 import BracketsView from './views/BracketsView/BracketsVIew.jsx';
 import OurTeamView from './views/OurTeamView/OurTeamView.jsx';
+import SetUpMatchView from './views/CreateMatchView/CreateMatchView.jsx';
+import ViewMatchesView from './views/BrowseMatches/BrowseMatchesView.jsx';
+
+
 
 
 import UserPublicProfileView from './views/UserPublicProfileView/UserPublicProfileView.jsx' //! New stuff
@@ -43,8 +47,10 @@ export default function App() {
               <Route path="/browsePlayers" element={<BrowsePlayersView />} /> //! just added this
               <Route path="/publicProfile/:id?" element={<UserPublicProfileView />} />
               <Route path="/myTeams" element={<MyTeamsView />} />
-              <Route path="/SingleTeam/:id" element={<SingleTeamView/>} /> //! more new stuff
+              <Route path="/SingleTeam/:id" element={<SingleTeamView />} /> //! more new stuff
               <Route path="/Inbox" element={<InboxView />} />
+              <Route path="/setupMatch" element={<SetUpMatchView />} />
+              <Route path="/viewMatches" element={<ViewMatchesView />} />
 
 
               <Route path="/createTeam" element={<CreateTeamView />} />

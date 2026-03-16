@@ -7,11 +7,11 @@ public class TeamJoinRequest {
     private int requestId;
     private int teamId;
     private int userId;
-    private String status; // PENDING, APPROVED, REJECTED
+    private String status;
     private LocalDateTime requestDate;
     private String type;
-    public String getType() { return type; }
-    public void setType(String type) { this.type = type; }
+    private boolean hiddenSender;
+    private boolean hiddenReceiver;
 
     public int getRequestId() { return requestId; }
     public void setRequestId(int requestId) { this.requestId = requestId; }
@@ -27,8 +27,13 @@ public class TeamJoinRequest {
 
     public LocalDateTime getRequestDate() { return requestDate; }
     public void setRequestDate(LocalDateTime requestDate) { this.requestDate = requestDate; }
+
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
+
+    public boolean isHiddenSender() { return hiddenSender; }
+    public void setHiddenSender(boolean hiddenSender) { this.hiddenSender = hiddenSender; }
+
+    public boolean isHiddenReceiver() { return hiddenReceiver; }
+    public void setHiddenReceiver(boolean hiddenReceiver) { this.hiddenReceiver = hiddenReceiver; }
 }
-
-
-
-

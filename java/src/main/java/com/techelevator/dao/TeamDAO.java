@@ -25,6 +25,10 @@ public interface TeamDAO {
 
     List<Team> getTeamsByOwnerId(int userId);
 
+    void removeTeamMember(int teamId, int userId);
+
+
+
 
 
 

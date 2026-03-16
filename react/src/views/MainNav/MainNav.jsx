@@ -77,6 +77,22 @@ export default function MainNav() {
         )}
       </div>
 
+      {/* Matches Dropdown */}
+      <div className={styles.dropdown}>
+        <button
+          className={`${styles.dropdownToggle} ${openDropdown === 'matches' ? styles.open : ''}`}
+          onClick={() => toggleDropdown('matches')}
+        >
+          Matches ▾
+        </button>
+        {openDropdown === 'matches' && (
+          <div className={styles.dropdownMenu}>
+            <NavLink to="/setupMatch" onClick={closeDropdown}>Set Up Match</NavLink>
+            <NavLink to="/viewMatches" onClick={closeDropdown}>View Matches</NavLink>
+          </div>
+        )}
+      </div>
+
       {/* Auth-dependent links */}
       {user ? (
         <>

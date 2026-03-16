@@ -1,6 +1,3 @@
-
-
-
 package com.techelevator.dao;
 
 import com.techelevator.model.TeamJoinRequest;
@@ -9,7 +6,6 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
-
 
 @Component
 public class JdbcTeamJoinRequestDao implements TeamJoinRequestDao {
@@ -36,8 +32,8 @@ public class JdbcTeamJoinRequestDao implements TeamJoinRequestDao {
     @Override
     public List<TeamJoinRequest> getAllRequestsForTeam(int teamId) {
         List<TeamJoinRequest> requests = new ArrayList<>();
-        String sql = "SELECT request_id, team_id, user_id, status, request_date, type " +
-                "FROM team_join_request WHERE team_id = ?";
+        String sql = "SELECT request_id, team_id, user_id, status, request_date, type, hidden_sender, hidden_receiver " +
+                "FROM team_join_request WHERE team_id = ? AND hidden_receiver = FALSE";
         SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, teamId);
         while (rs.next()) {
             requests.add(mapRowToTeamJoinRequest(rs));
@@ -47,7 +43,7 @@ public class JdbcTeamJoinRequestDao implements TeamJoinRequestDao {
 
     @Override
     public TeamJoinRequest getRequestById(int requestId) {
-        String sql = "SELECT request_id, team_id, user_id, status, request_date, type " +
+        String sql = "SELECT request_id, team_id, user_id, status, request_date, type, hidden_sender, hidden_receiver " +
                 "FROM team_join_request WHERE request_id = ?";
         SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, requestId);
         if (rs.next()) {
@@ -55,11 +51,12 @@ public class JdbcTeamJoinRequestDao implements TeamJoinRequestDao {
         }
         return null;
     }
+
     @Override
     public List<TeamJoinRequest> getInvitesForUser(int userId) {
         List<TeamJoinRequest> requests = new ArrayList<>();
-        String sql = "SELECT request_id, team_id, user_id, status, request_date, type " +
-                "FROM team_join_request WHERE user_id = ? AND type = 'INVITE'";
+        String sql = "SELECT request_id, team_id, user_id, status, request_date, type, hidden_sender, hidden_receiver " +
+                "FROM team_join_request WHERE user_id = ? AND type = 'INVITE' AND hidden_receiver = FALSE";
         SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, userId);
         while (rs.next()) {
             requests.add(mapRowToTeamJoinRequest(rs));
@@ -76,13 +73,49 @@ public class JdbcTeamJoinRequestDao implements TeamJoinRequestDao {
     @Override
     public List<TeamJoinRequest> getRequestsForTeam(int teamId) {
         List<TeamJoinRequest> requests = new ArrayList<>();
-        String sql = "SELECT request_id, team_id, user_id, status, request_date, type " +
-                "FROM team_join_request WHERE team_id = ? AND type = 'JOIN_REQUEST'";
+        String sql = "SELECT request_id, team_id, user_id, status, request_date, type, hidden_sender, hidden_receiver " +
+                "FROM team_join_request WHERE team_id = ? AND type = 'JOIN_REQUEST' AND hidden_receiver = FALSE";
         SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, teamId);
         while (rs.next()) {
             requests.add(mapRowToTeamJoinRequest(rs));
         }
         return requests;
+    }
+
+    @Override
+    public List<TeamJoinRequest> getInvitesByTeam(int teamId) {
+        List<TeamJoinRequest> requests = new ArrayList<>();
+        String sql = "SELECT request_id, team_id, user_id, status, request_date, type, hidden_sender, hidden_receiver " +
+                "FROM team_join_request WHERE team_id = ? AND type = 'INVITE' AND hidden_sender = FALSE";
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, teamId);
+        while (rs.next()) {
+            requests.add(mapRowToTeamJoinRequest(rs));
+        }
+        return requests;
+    }
+
+    @Override
+    public List<TeamJoinRequest> getRequestsByUserId(int userId) {
+        List<TeamJoinRequest> requests = new ArrayList<>();
+        String sql = "SELECT request_id, team_id, user_id, status, request_date, type, hidden_sender, hidden_receiver " +
+                "FROM team_join_request WHERE user_id = ? AND type = 'JOIN_REQUEST' AND hidden_sender = FALSE";
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, userId);
+        while (rs.next()) {
+            requests.add(mapRowToTeamJoinRequest(rs));
+        }
+        return requests;
+    }
+
+    @Override
+    public void hideSent(int requestId) {
+        String sql = "UPDATE team_join_request SET hidden_sender = TRUE WHERE request_id = ?";
+        jdbcTemplate.update(sql, requestId);
+    }
+
+    @Override
+    public void hideReceived(int requestId) {
+        String sql = "UPDATE team_join_request SET hidden_receiver = TRUE WHERE request_id = ?";
+        jdbcTemplate.update(sql, requestId);
     }
 
     private TeamJoinRequest mapRowToTeamJoinRequest(SqlRowSet rs) {
@@ -93,28 +126,8 @@ public class JdbcTeamJoinRequestDao implements TeamJoinRequestDao {
         request.setStatus(rs.getString("status"));
         request.setRequestDate(rs.getTimestamp("request_date").toLocalDateTime());
         request.setType(rs.getString("type"));
+        request.setHiddenSender(rs.getBoolean("hidden_sender"));
+        request.setHiddenReceiver(rs.getBoolean("hidden_receiver"));
         return request;
-    }
-    @Override
-    public List<TeamJoinRequest> getInvitesByTeam(int teamId) {
-        List<TeamJoinRequest> requests = new ArrayList<>();
-        String sql = "SELECT request_id, team_id, user_id, status, request_date, type " +
-                "FROM team_join_request WHERE team_id = ? AND type = 'INVITE'";
-        SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, teamId);
-        while (rs.next()) {
-            requests.add(mapRowToTeamJoinRequest(rs));
-        }
-        return requests;
-    }
-    @Override
-    public List<TeamJoinRequest> getRequestsByUserId(int userId) {
-        List<TeamJoinRequest> requests = new ArrayList<>();
-        String sql = "SELECT request_id, team_id, user_id, status, request_date, type " +
-                "FROM team_join_request WHERE user_id = ? AND type = 'JOIN_REQUEST'";
-        SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, userId);
-        while (rs.next()) {
-            requests.add(mapRowToTeamJoinRequest(rs));
-        }
-        return requests;
     }
 }

@@ -88,4 +88,16 @@ public class TeamJoinRequestController {
     public List<TeamJoinRequest> getInvitesByTeam(@PathVariable int teamId) {
         return teamJoinRequestDao.getInvitesByTeam(teamId);
     }
+
+    @PutMapping("/join-request/{requestId}/hide-sent")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void hideSent(@PathVariable int requestId) {
+        teamJoinRequestDao.hideSent(requestId);
+    }
+
+    @PutMapping("/join-request/{requestId}/hide-received")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void hideReceived(@PathVariable int requestId) {
+        teamJoinRequestDao.hideReceived(requestId);
+    }
 }
