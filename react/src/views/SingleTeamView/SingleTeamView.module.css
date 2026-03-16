@@ -653,6 +653,45 @@
   color: #f97316;
 }
 
+.challengeFields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.challengeField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.challengeFieldLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: #555;
+}
+
+.challengeFieldInput {
+  padding: 10px 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+  color: #1a2e1a;
+  transition: border-color 0.2s;
+}
+
+.challengeFieldInput:focus {
+  outline: none;
+  border-color: #f97316;
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.15);
+}
+
+
+
+
+
 /* ── RESPONSIVE ── */
 @media (max-width: 700px) {
   .statsRow { grid-template-columns: repeat(2, 1fr); }

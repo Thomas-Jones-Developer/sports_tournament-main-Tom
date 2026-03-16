@@ -1,6 +1,7 @@
 package com.techelevator.model;
 
 import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class MatchChallenge {
 
@@ -11,6 +12,14 @@ public class MatchChallenge {
     private LocalDateTime challengeDate;
     private boolean hiddenSender;
     private boolean hiddenReceiver;
+    private String locationName;
+    private String locationAddress;
+
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime matchTime;
+
+
+
 
     public int getChallengeId() { return challengeId; }
     public void setChallengeId(int challengeId) { this.challengeId = challengeId; }
@@ -32,4 +41,15 @@ public class MatchChallenge {
 
     public boolean isHiddenReceiver() { return hiddenReceiver; }
     public void setHiddenReceiver(boolean hiddenReceiver) { this.hiddenReceiver = hiddenReceiver; }
+
+    public String getLocationName() { return locationName; }
+    public void setLocationName(String locationName) { this.locationName = locationName; }
+    public String getLocationAddress() { return locationAddress; }
+    public void setLocationAddress(String locationAddress) { this.locationAddress = locationAddress; }
+    public LocalDateTime getMatchTime() { return matchTime; }
+    public void setMatchTime(LocalDateTime matchTime) { this.matchTime = matchTime; }
+
+
+
+
 }

@@ -18,6 +18,9 @@ export default function SingleTeamView() {
   const [loading, setLoading] = useState(true);
   const [requested, setRequested] = useState(false);
   const [challenged, setChallenged] = useState(false);
+  const [locationName, setLocationName] = useState("");
+  const [locationAddress, setLocationAddress] = useState("");
+  const [matchTime, setMatchTime] = useState("");
 
   // Modal state
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -80,20 +83,24 @@ export default function SingleTeamView() {
       .catch((err) => console.error("Failed to transfer team:", err));
   };
 
-  const handleChallenge = () => {
-    axios.post(`/challenges`, {
-      challengerTeamId: currentUser.teamId,
-      challengedTeamId: parseInt(id)
+const handleChallenge = () => {
+  const formattedTime = matchTime.length === 16 ? matchTime + ":00" : matchTime;
+  axios.post(`/challenges`, {
+    challengerTeamId: currentUser.teamId,
+    challengedTeamId: parseInt(id),
+    locationName,
+    locationAddress,
+    matchTime: formattedTime,
+  })
+    .then(() => {
+      setChallenged(true);
+      setShowChallengeModal(false);
     })
-      .then(() => {
-        setChallenged(true);
-        setShowChallengeModal(false);
-      })
-      .catch((err) => {
-        console.error("Failed to send challenge:", err);
-        alert("Failed to send challenge.");
-      });
-  };
+    .catch((err) => {
+      console.error("Failed to send challenge:", err);
+      alert("Failed to send challenge.");
+    });
+};
 
   const isCaptain = currentUser && team && currentUser.id === team.userId;
   const isMember = currentUser && members.some(m => m.id === currentUser.id);
@@ -157,26 +164,61 @@ export default function SingleTeamView() {
 
       {/* Challenge Modal */}
       {showChallengeModal && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modal}>
-            <h2 className={styles.modalTitle}>⚔️ Issue a Challenge</h2>
-            <p className={styles.modalText}>
-              You are about to challenge <strong>{team.teamName}</strong> to a match on behalf of your team. They will receive this challenge in their inbox and can accept or deny it.
-            </p>
-            <div className={styles.challengePreview}>
-              <div className={styles.challengeTeam}>Your Team</div>
-              <div className={styles.challengeVs}>VS</div>
-              <div className={styles.challengeTeam}>{team.teamName}</div>
-            </div>
-            <div className={styles.modalActions}>
-              <button className={styles.cancelBtn} onClick={() => setShowChallengeModal(false)}>Cancel</button>
-              <button className={styles.confirmChallengeBtn} onClick={handleChallenge}>
-                ⚔️ This looks good, send it!
-              </button>
-            </div>
-          </div>
+  <div className={styles.modalOverlay}>
+    <div className={styles.modal}>
+      <h2 className={styles.modalTitle}>⚔️ Issue a Challenge</h2>
+      <p className={styles.modalText}>
+        You are about to challenge <strong>{team.teamName}</strong> to a match. Fill in the details below.
+      </p>
+      <div className={styles.challengePreview}>
+        <div className={styles.challengeTeam}>Your Team</div>
+        <div className={styles.challengeVs}>VS</div>
+        <div className={styles.challengeTeam}>{team.teamName}</div>
+      </div>
+      <div className={styles.challengeFields}>
+        <div className={styles.challengeField}>
+          <label className={styles.challengeFieldLabel}>Location Name</label>
+          <input
+            className={styles.challengeFieldInput}
+            type="text"
+            placeholder="e.g. Goodale Park"
+            value={locationName}
+            onChange={(e) => setLocationName(e.target.value)}
+          />
         </div>
-      )}
+        <div className={styles.challengeField}>
+          <label className={styles.challengeFieldLabel}>Address</label>
+          <input
+            className={styles.challengeFieldInput}
+            type="text"
+            placeholder="e.g. 120 W Goodale St, Columbus, OH"
+            value={locationAddress}
+            onChange={(e) => setLocationAddress(e.target.value)}
+          />
+        </div>
+        <div className={styles.challengeField}>
+          <label className={styles.challengeFieldLabel}>Match Date & Time</label>
+          <input
+            className={styles.challengeFieldInput}
+            type="datetime-local"
+            value={matchTime}
+            onChange={(e) => setMatchTime(e.target.value)}
+          />
+        </div>
+      </div>
+      <div className={styles.modalActions}>
+        <button className={styles.cancelBtn} onClick={() => setShowChallengeModal(false)}>Cancel</button>
+        <button
+          className={styles.confirmChallengeBtn}
+          onClick={handleChallenge}
+          disabled={!locationName || !locationAddress || !matchTime}
+        >
+          ⚔️ This looks good, send it!
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
       {/* Hero */}
       <div className={styles.hero}>

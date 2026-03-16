@@ -259,6 +259,60 @@
 
 .secondaryBtn:hover { background: #e8e8e4; }
 
+.locationSection {
+  border-top: 1px solid #f0f0ec;
+  padding-top: 24px;
+  margin-bottom: 24px;
+}
+
+.locationTitle {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #1a2e1a;
+  margin: 0 0 16px;
+  letter-spacing: 0.04em;
+}
+
+.locationGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+}
+
+.locationField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fieldLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: #555;
+}
+
+.fieldInput {
+  padding: 10px 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+  color: #1a2e1a;
+  transition: border-color 0.2s;
+}
+
+.fieldInput:focus {
+  outline: none;
+  border-color: #f97316;
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.15);
+}
+
+@media (max-width: 600px) {
+  .locationGrid { grid-template-columns: 1fr; }
+}
+
 @media (max-width: 600px) {
   .matchSetup { grid-template-columns: 1fr; }
   .vsBlock { padding-top: 0; }

@@ -23,7 +23,10 @@ public class MatchChallengeController {
     public MatchChallenge createChallenge(@RequestBody MatchChallenge challenge) {
         return matchChallengeDao.createChallenge(
                 challenge.getChallengerTeamId(),
-                challenge.getChallengedTeamId()
+                challenge.getChallengedTeamId(),
+                challenge.getLocationName(),
+                challenge.getLocationAddress(),
+                challenge.getMatchTime()
         );
     }
 
@@ -65,6 +68,4 @@ public class MatchChallengeController {
     public List<MatchChallenge> getAllAcceptedChallenges() {
         return matchChallengeDao.getAllAcceptedChallenges();
     }
-
-
 }
