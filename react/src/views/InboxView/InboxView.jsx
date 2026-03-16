@@ -207,129 +207,129 @@ export default function InboxView() {
           ))}
         </div>
 
-       {/* Received Messages */}
-{activeTab === "Received" && (
-  <div className={styles.messageList}>
-    {received.length === 0 ? (
-      <div className={styles.empty}>
-        {user.teamId ? "No pending requests for your team." : "No invites received yet."}
-      </div>
-    ) : (
-      received.map(msg => (
-        <div
-          key={msg.requestId}
-          className={`${styles.messageCard} ${msg.messageType === "CHALLENGE"
-              ? styles.challengeCard
-              : styles[msg.status?.toLowerCase()]
-            }`}
-        >
-          <div className={styles.messageLeft}>
-            <div className={`${styles.messageAvatar} ${msg.messageType === "CHALLENGE" ? styles.challengeAvatar : ""}`}>
-              {msg.messageType === "CHALLENGE" ? "⚔️" : msg.fromInitial}
-            </div>
-            <div className={styles.messageBody}>
-              {msg.messageType === "CHALLENGE" && (
-                <div className={styles.challengeLabel}>⚔️ CHALLENGE ISSUED</div>
-              )}
-              <div className={styles.messageFrom}>{msg.fromName}</div>
-              <div className={styles.messageTeam}>
-                {msg.messageType === "CHALLENGE"
-                  ? `${msg.fromName} wants to face your team in a match`
-                  : `Re: ${msg.teamName}`}
+        {/* Received Messages */}
+        {activeTab === "Received" && (
+          <div className={styles.messageList}>
+            {received.length === 0 ? (
+              <div className={styles.empty}>
+                {user.teamId ? "No pending requests for your team." : "No invites received yet."}
               </div>
-              {msg.messageType === "CHALLENGE" ? (
-                <>
-                  {msg.matchTime && (
-                    <div className={styles.messageText}>📅 {new Date(msg.matchTime).toLocaleString()}</div>
-                  )}
-                  {msg.locationName && (
-                    <div className={styles.messageText}>
-                      📍 {msg.locationName}{msg.locationAddress ? ` — ${msg.locationAddress}` : ""}
-                    </div>
-                  )}
-                </>
-              ) : (
-                <div className={styles.messageText}>
-                  {user.teamId ? "Wants to join your team" : "You've been invited to join this team"}
-                </div>
-              )}
-              <div className={styles.messageDate}>{new Date(msg.requestDate).toLocaleString()}</div>
-            </div>
-          </div>
-          <div className={styles.messageActions}>
-            {msg.status === "PENDING" ? (
-              <>
-                <button className={styles.acceptBtn} onClick={() => handleAccept(msg.requestId, msg.messageType)}>Accept</button>
-                <button className={styles.denyBtn} onClick={() => handleDeny(msg.requestId, msg.messageType)}>Deny</button>
-              </>
             ) : (
-              <span className={`${styles.statusPill} ${styles[msg.status?.toLowerCase()]}`}>
-                {msg.status.charAt(0) + msg.status.slice(1).toLowerCase()}
-              </span>
-            )}
-            <button className={styles.deleteBtn} onClick={() => handleDeleteReceived(msg.requestId, msg.messageType)}>Delete</button>
-          </div>
-        </div>
-      ))
-    )}
-  </div>
-)}
-
-{/* Sent Messages */}
-{activeTab === "Sent" && (
-  <div className={styles.messageList}>
-    {sent.length === 0 ? (
-      <div className={styles.empty}>No requests sent yet.</div>
-    ) : (
-      sent.map(msg => (
-        <div
-          key={msg.requestId}
-          className={`${styles.messageCard} ${msg.messageType === "CHALLENGE"
-              ? styles.challengeCard
-              : styles[msg.status?.toLowerCase()]
-            }`}
-        >
-          <div className={styles.messageLeft}>
-            <div className={`${styles.messageAvatar} ${msg.messageType === "CHALLENGE" ? styles.challengeAvatar : ""}`}>
-              {msg.messageType === "CHALLENGE" ? "⚔️" : "→"}
-            </div>
-            <div className={styles.messageBody}>
-              {msg.messageType === "CHALLENGE" && (
-                <div className={styles.challengeLabel}>⚔️ CHALLENGE ISSUED</div>
-              )}
-              <div className={styles.messageFrom}>
-                {msg.messageType === "INVITE" ? `To: ${msg.toName}` : `To: ${msg.teamName}`}
-              </div>
-              {msg.messageType === "CHALLENGE" ? (
-                <>
-                  {msg.matchTime && (
-                    <div className={styles.messageText}>📅 {new Date(msg.matchTime).toLocaleString()}</div>
-                  )}
-                  {msg.locationName && (
-                    <div className={styles.messageText}>
-                      📍 {msg.locationName}{msg.locationAddress ? ` — ${msg.locationAddress}` : ""}
+              received.map(msg => (
+                <div
+                  key={msg.requestId}
+                  className={`${styles.messageCard} ${msg.messageType === "CHALLENGE"
+                    ? styles.challengeCard
+                    : styles[msg.status?.toLowerCase()]
+                    }`}
+                >
+                  <div className={styles.messageLeft}>
+                    <div className={`${styles.messageAvatar} ${msg.messageType === "CHALLENGE" ? styles.challengeAvatar : ""}`}>
+                      {msg.messageType === "CHALLENGE" ? "⚔️" : msg.fromInitial}
                     </div>
-                  )}
-                </>
-              ) : (
-                <div className={styles.messageText}>
-                  {msg.messageType === "INVITE" ? "Invited player to join team" : "Request to join team"}
+                    <div className={styles.messageBody}>
+                      {msg.messageType === "CHALLENGE" && (
+                        <div className={styles.challengeLabel}>⚔️ CHALLENGE ISSUED</div>
+                      )}
+                      <div className={styles.messageFrom}>{msg.fromName}</div>
+                      <div className={styles.messageTeam}>
+                        {msg.messageType === "CHALLENGE"
+                          ? `${msg.fromName} wants to face your team in a match`
+                          : `Re: ${msg.teamName}`}
+                      </div>
+                      {msg.messageType === "CHALLENGE" ? (
+                        <>
+                          {msg.matchTime && (
+                            <div className={styles.messageText}>📅 {new Date(msg.matchTime).toLocaleString()}</div>
+                          )}
+                          {msg.locationName && (
+                            <div className={styles.messageText}>
+                              📍 {msg.locationName}{msg.locationAddress ? ` — ${msg.locationAddress}` : ""}
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <div className={styles.messageText}>
+                          {user.teamId ? "Wants to join your team" : "You've been invited to join this team"}
+                        </div>
+                      )}
+                      <div className={styles.messageDate}>{new Date(msg.requestDate).toLocaleString()}</div>
+                    </div>
+                  </div>
+                  <div className={styles.messageActions}>
+                    {msg.status === "PENDING" ? (
+                      <>
+                        <button className={styles.acceptBtn} onClick={() => handleAccept(msg.requestId, msg.messageType)}>Accept</button>
+                        <button className={styles.denyBtn} onClick={() => handleDeny(msg.requestId, msg.messageType)}>Deny</button>
+                      </>
+                    ) : (
+                      <span className={`${styles.statusPill} ${styles[msg.status?.toLowerCase()]}`}>
+                        {msg.status.charAt(0) + msg.status.slice(1).toLowerCase()}
+                      </span>
+                    )}
+                    <button className={styles.deleteBtn} onClick={() => handleDeleteReceived(msg.requestId, msg.messageType)}>Delete</button>
+                  </div>
                 </div>
-              )}
-              <div className={styles.messageDate}>Sent: {new Date(msg.requestDate).toLocaleString()}</div>
-            </div>
+              ))
+            )}
           </div>
-          <div className={styles.messageActions}>
-            <span className={`${styles.statusPill} ${styles[msg.status?.toLowerCase()]}`}>
-              {msg.status.charAt(0) + msg.status.slice(1).toLowerCase()}
-            </span>
-            <button className={styles.deleteBtn} onClick={() => handleDeleteSent(msg.requestId, msg.messageType)}>Delete</button>
+        )}
+
+        {/* Sent Messages */}
+        {activeTab === "Sent" && (
+          <div className={styles.messageList}>
+            {sent.length === 0 ? (
+              <div className={styles.empty}>No requests sent yet.</div>
+            ) : (
+              sent.map(msg => (
+                <div
+                  key={msg.requestId}
+                  className={`${styles.messageCard} ${msg.messageType === "CHALLENGE"
+                    ? styles.challengeCard
+                    : styles[msg.status?.toLowerCase()]
+                    }`}
+                >
+                  <div className={styles.messageLeft}>
+                    <div className={`${styles.messageAvatar} ${msg.messageType === "CHALLENGE" ? styles.challengeAvatar : ""}`}>
+                      {msg.messageType === "CHALLENGE" ? "⚔️" : "→"}
+                    </div>
+                    <div className={styles.messageBody}>
+                      {msg.messageType === "CHALLENGE" && (
+                        <div className={styles.challengeLabel}>⚔️ CHALLENGE ISSUED</div>
+                      )}
+                      <div className={styles.messageFrom}>
+                        {msg.messageType === "INVITE" ? `To: ${msg.toName}` : `To: ${msg.teamName}`}
+                      </div>
+                      {msg.messageType === "CHALLENGE" ? (
+                        <>
+                          {msg.matchTime && (
+                            <div className={styles.messageText}>📅 {new Date(msg.matchTime).toLocaleString()}</div>
+                          )}
+                          {msg.locationName && (
+                            <div className={styles.messageText}>
+                              📍 {msg.locationName}{msg.locationAddress ? ` — ${msg.locationAddress}` : ""}
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <div className={styles.messageText}>
+                          {msg.messageType === "INVITE" ? "Invited player to join team" : "Request to join team"}
+                        </div>
+                      )}
+                      <div className={styles.messageDate}>Sent: {new Date(msg.requestDate).toLocaleString()}</div>
+                    </div>
+                  </div>
+                  <div className={styles.messageActions}>
+                    <span className={`${styles.statusPill} ${styles[msg.status?.toLowerCase()]}`}>
+                      {msg.status.charAt(0) + msg.status.slice(1).toLowerCase()}
+                    </span>
+                    <button className={styles.deleteBtn} onClick={() => handleDeleteSent(msg.requestId, msg.messageType)}>Delete</button>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
-        </div>
-      ))
-    )}
-  </div>
-)}
+        )}
 
       </div>
     </div>
