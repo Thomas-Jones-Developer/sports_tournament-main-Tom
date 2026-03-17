@@ -688,7 +688,14 @@
   box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.15);
 }
 
-
+.addressPreview {
+  padding: 10px 14px;
+  background: #f4f4f0;
+  border: 1px solid #e8e8e4;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #555;
+}
 
 
 

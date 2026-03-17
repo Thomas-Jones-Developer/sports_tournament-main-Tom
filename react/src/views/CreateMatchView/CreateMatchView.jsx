@@ -13,21 +13,27 @@ export default function SetUpMatchView() {
     const [challengedTeamId, setChallengedTeamId] = useState("");
     const [sent, setSent] = useState(false);
     const [loading, setLoading] = useState(true);
-    const [locationName, setLocationName] = useState("");
-    const [locationAddress, setLocationAddress] = useState("");
     const [matchTime, setMatchTime] = useState("");
+    const [states, setStates] = useState([]);
+    const [cities, setCities] = useState([]);
+    const [parks, setParks] = useState([]);
+    const [selectedState, setSelectedState] = useState("");
+    const [selectedCity, setSelectedCity] = useState("");
+    const [selectedPark, setSelectedPark] = useState(null);
 
     useEffect(() => {
         if (!user) return;
         Promise.all([
             axios.get("/team"),
-            axios.get(`/team/owned/${user.id}`)
+            axios.get(`/team/owned/${user.id}`),
+            axios.get("/parks/states")
         ])
-            .then(([allRes, ownedRes]) => {
+            .then(([allRes, ownedRes, statesRes]) => {
                 setAllTeams(allRes.data || []);
                 const owned = ownedRes.data || [];
                 setOwnedTeams(owned);
                 if (owned.length > 0) setChallengerTeamId(String(owned[0].teamId));
+                setStates(statesRes.data || []);
             })
             .catch((err) => console.error("Failed to load teams:", err))
             .finally(() => setLoading(false));
@@ -37,31 +43,52 @@ export default function SetUpMatchView() {
         (t) => String(t.teamId) !== String(challengerTeamId)
     );
 
-const handleChallenge = () => {
-  if (!challengerTeamId || !challengedTeamId) {
-    alert("Please select both teams.");
-    return;
-  }
-  if (!locationName || !locationAddress || !matchTime) {
-    alert("Please fill in location and match time.");
-    return;
-  }
-  // datetime-local gives "2026-04-01T14:00", backend needs "2026-04-01T14:00:00"
-  const formattedTime = matchTime.length === 16 ? matchTime + ":00" : matchTime;
+    const handleStateChange = (e) => {
+        const state = e.target.value;
+        setSelectedState(state);
+        setSelectedCity("");
+        setSelectedPark(null);
+        setParks([]);
+        axios.get(`/parks/cities?state=${state}`)
+            .then(res => setCities(res.data || []));
+    };
 
-  axios.post("/challenges", {
-    challengerTeamId: parseInt(challengerTeamId),
-    challengedTeamId: parseInt(challengedTeamId),
-    locationName,
-    locationAddress,
-    matchTime: formattedTime,
-  })
-    .then(() => setSent(true))
-    .catch((err) => {
-      console.error("Failed to send challenge:", err);
-      alert("Failed to send challenge.");
-    });
-};
+    const handleCityChange = (e) => {
+        const city = e.target.value;
+        setSelectedCity(city);
+        setSelectedPark(null);
+        axios.get(`/parks?city=${city}&state=${selectedState}`)
+            .then(res => setParks(res.data || []));
+    };
+
+    const handleParkChange = (e) => {
+        const park = parks.find(p => String(p.parkId) === e.target.value);
+        setSelectedPark(park || null);
+    };
+
+    const handleChallenge = () => {
+        if (!challengerTeamId || !challengedTeamId) {
+            alert("Please select both teams.");
+            return;
+        }
+        if (!selectedPark || !matchTime) {
+            alert("Please select a park and match time.");
+            return;
+        }
+        const formattedTime = matchTime.length === 16 ? matchTime + ":00" : matchTime;
+        axios.post("/challenges", {
+            challengerTeamId: parseInt(challengerTeamId),
+            challengedTeamId: parseInt(challengedTeamId),
+            locationName: selectedPark.parkName,
+            locationAddress: `${selectedPark.address}, ${selectedPark.city}, ${selectedPark.state}`,
+            matchTime: formattedTime,
+        })
+            .then(() => setSent(true))
+            .catch((err) => {
+                console.error("Failed to send challenge:", err);
+                alert("Failed to send challenge.");
+            });
+    };
 
     if (!user) return <div className={styles.empty}>Please log in to set up a match.</div>;
     if (loading) return <div className={styles.empty}>Loading...</div>;
@@ -71,7 +98,6 @@ const handleChallenge = () => {
 
     return (
         <div className={styles.page}>
-
             <div className={styles.hero}>
                 <div className={styles.heroInner}>
                     <div className={styles.heroText}>
@@ -91,7 +117,14 @@ const handleChallenge = () => {
                             Your challenge has been sent to <strong>{challengedTeam?.teamName}</strong>. They will receive it in their inbox and can accept or deny it.
                         </p>
                         <div className={styles.successActions}>
-                            <button className={styles.primaryBtn} onClick={() => { setSent(false); setChallengedTeamId(""); }}>
+                            <button className={styles.primaryBtn} onClick={() => {
+                                setSent(false);
+                                setChallengedTeamId("");
+                                setSelectedState("");
+                                setSelectedCity("");
+                                setSelectedPark(null);
+                                setMatchTime("");
+                            }}>
                                 Send Another Challenge
                             </button>
                             <button className={styles.secondaryBtn} onClick={() => navigate("/Inbox")}>
@@ -101,10 +134,9 @@ const handleChallenge = () => {
                     </div>
                 ) : (
                     <div className={styles.matchCard}>
+
+                        {/* Team selection */}
                         <div className={styles.matchSetup}>
-
-
-                            {/* Challenger */}
                             <div className={styles.teamSelector}>
                                 <div className={styles.selectorLabel}>Your Team</div>
                                 <select
@@ -128,12 +160,10 @@ const handleChallenge = () => {
                                 )}
                             </div>
 
-                            {/* VS */}
                             <div className={styles.vsBlock}>
                                 <div className={styles.vsText}>VS</div>
                             </div>
 
-                            {/* Challenged */}
                             <div className={styles.teamSelector}>
                                 <div className={styles.selectorLabel}>Opponent</div>
                                 <select
@@ -154,46 +184,73 @@ const handleChallenge = () => {
                                     </div>
                                 )}
                             </div>
-
                         </div>
 
+                        {/* Match details */}
                         <div className={styles.locationSection}>
-                                <h3 className={styles.locationTitle}>Match Details</h3>
-                                <div className={styles.locationGrid}>
-                                    <div className={styles.locationField}>
-                                        <label className={styles.fieldLabel}>Location Name</label>
-                                        <input
-                                            className={styles.fieldInput}
-                                            type="text"
-                                            placeholder="e.g. Goodale Park"
-                                            value={locationName}
-                                            onChange={(e) => setLocationName(e.target.value)}
-                                            required
-                                        />
-                                    </div>
-                                    <div className={styles.locationField}>
-                                        <label className={styles.fieldLabel}>Address</label>
-                                        <input
-                                            className={styles.fieldInput}
-                                            type="text"
-                                            placeholder="e.g. 120 W Goodale St, Columbus, OH"
-                                            value={locationAddress}
-                                            onChange={(e) => setLocationAddress(e.target.value)}
-                                            required
-                                        />
-                                    </div>
-                                    <div className={styles.locationField}>
-                                        <label className={styles.fieldLabel}>Match Date & Time</label>
-                                        <input
-                                            className={styles.fieldInput}
-                                            type="datetime-local"
-                                            value={matchTime}
-                                            onChange={(e) => setMatchTime(e.target.value)}
-                                            required
-                                        />
-                                    </div>
+                            <h3 className={styles.locationTitle}>Match Details</h3>
+                            <div className={styles.locationGrid}>
+                                <div className={styles.locationField}>
+                                    <label className={styles.fieldLabel}>State</label>
+                                    <select
+                                        className={styles.fieldInput}
+                                        value={selectedState}
+                                        onChange={handleStateChange}
+                                    >
+                                        <option value="" disabled>Select state...</option>
+                                        {states.map(s => (
+                                            <option key={s} value={s}>{s}</option>
+                                        ))}
+                                    </select>
                                 </div>
+                                <div className={styles.locationField}>
+                                    <label className={styles.fieldLabel}>City</label>
+                                    <select
+                                        className={styles.fieldInput}
+                                        value={selectedCity}
+                                        onChange={handleCityChange}
+                                        disabled={!selectedState}
+                                    >
+                                        <option value="" disabled>Select city...</option>
+                                        {cities.map(c => (
+                                            <option key={c} value={c}>{c}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className={styles.locationField}>
+                                    <label className={styles.fieldLabel}>Park</label>
+                                    <select
+                                        className={styles.fieldInput}
+                                        value={selectedPark?.parkId || ""}
+                                        onChange={handleParkChange}
+                                        disabled={!selectedCity}
+                                    >
+                                        <option value="" disabled>Select park...</option>
+                                        {parks.map(p => (
+                                            <option key={p.parkId} value={p.parkId}>{p.parkName}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className={styles.locationField}>
+                                    <label className={styles.fieldLabel}>Match Date & Time</label>
+                                    <input
+                                        className={styles.fieldInput}
+                                        type="datetime-local"
+                                        value={matchTime}
+                                        onChange={(e) => setMatchTime(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                                {selectedPark && (
+                                    <div className={styles.locationField} style={{ gridColumn: "1 / -1" }}>
+                                        <label className={styles.fieldLabel}>Address</label>
+                                        <div className={styles.addressPreview}>
+                                            📍 {selectedPark.parkName} — {selectedPark.address}, {selectedPark.city}, {selectedPark.state}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
+                        </div>
 
                         <div className={styles.challengeFooter}>
                             <p className={styles.challengeNote}>
@@ -202,7 +259,7 @@ const handleChallenge = () => {
                             <button
                                 className={styles.challengeBtn}
                                 onClick={handleChallenge}
-                                disabled={!challengerTeamId || !challengedTeamId}
+                                disabled={!challengerTeamId || !challengedTeamId || !selectedPark || !matchTime}
                             >
                                 ⚔️ Send Challenge
                             </button>

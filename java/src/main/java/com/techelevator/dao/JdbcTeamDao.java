@@ -207,4 +207,24 @@ public class JdbcTeamDao implements TeamDAO {
             throw new DaoException("Error cleaning up join request", e);
         }
     }
+
+    @Override
+    public List<Team> getTeamsByMemberId(int userId) {
+        List<Team> teams = new ArrayList<>();
+        String sql = "SELECT t.team_id, t.sport_id, t.team_name, t.user_id, t.accepting_members, " +
+                "t.number_of_members, s.sport_name " +
+                "FROM team t " +
+                "JOIN team_member tm ON t.team_id = tm.team_id " +
+                "JOIN sport s ON t.sport_id = s.sport_id " +
+                "WHERE tm.user_id = ?";
+        try {
+            SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, userId);
+            while (rs.next()) {
+                teams.add(mapRowToTeam(rs));
+            }
+        } catch (DataAccessException e) {
+            throw new DaoException("Error retrieving teams for member " + userId, e);
+        }
+        return teams;
+    }
 }

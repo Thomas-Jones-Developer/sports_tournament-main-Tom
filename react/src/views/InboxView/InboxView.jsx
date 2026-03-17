@@ -14,105 +14,116 @@ export default function InboxView() {
 
 
 
-  useEffect(() => {
-    if (!user) return;
+ useEffect(() => {
+  if (!user) return;
 
-    const fetchData = async () => {
-      try {
-        const teamsRes = await axios.get("/team");
-        const teamsData = teamsRes.data || [];
-        const teamMap = {};
-        teamsData.forEach((t) => { teamMap[t.teamId] = t.teamName; });
+  const fetchData = async () => {
+    try {
+      const teamsRes = await axios.get("/team");
+      const teamsData = teamsRes.data || [];
+      const teamMap = {};
+      teamsData.forEach((t) => { teamMap[t.teamId] = t.teamName; });
 
-        const usersRes = await axios.get("/users");
-        const userMap = {};
-        (usersRes.data || []).forEach((u) => { userMap[u.id] = u; });
+      const usersRes = await axios.get("/users");
+      const userMap = {};
+      (usersRes.data || []).forEach((u) => { userMap[u.id] = u; });
 
-        // Sent: join requests this user made
-        const sentRes = await axios.get(`/teams/user/${user.id}/join-requests`);
-        const enrichedSent = (sentRes.data || []).map((r) => ({
+      // Sent: join requests this user made
+      const sentRes = await axios.get(`/teams/user/${user.id}/join-requests`);
+      const enrichedSent = (sentRes.data || []).map((r) => ({
+        ...r,
+        teamName: teamMap[r.teamId] || `Team ${r.teamId}`,
+        toName: teamMap[r.teamId] || `Team ${r.teamId}`,
+        messageType: "JOIN_REQUEST",
+      }));
+
+      // If owner, also fetch invites their team sent
+      let allSent = enrichedSent;
+      if (user.teamId) {
+        const invitesSentRes = await axios.get(`/teams/${user.teamId}/sent-invites`);
+        const enrichedInvitesSent = (invitesSentRes.data || []).map((r) => ({
           ...r,
           teamName: teamMap[r.teamId] || `Team ${r.teamId}`,
-          toName: teamMap[r.teamId] || `Team ${r.teamId}`,
+          toName: userMap[r.userId]
+            ? `${userMap[r.userId].firstName} ${userMap[r.userId].lastName}`
+            : `User ${r.userId}`,
+          messageType: "INVITE",
+        }));
+        allSent = [...enrichedSent, ...enrichedInvitesSent];
+
+        // Also fetch challenges sent by this user's team
+        const challengesSentRes = await axios.get(`/challenges/sent/${user.teamId}`);
+        const enrichedChallengesSent = (challengesSentRes.data || []).map((c) => ({
+          ...c,
+          requestId: c.challengeId,
+          teamName: teamMap[c.challengedTeamId] || `Team ${c.challengedTeamId}`,
+          toName: teamMap[c.challengedTeamId] || `Team ${c.challengedTeamId}`,
+          requestDate: c.challengeDate,
+          messageType: "CHALLENGE",
+        }));
+        allSent = [...allSent, ...enrichedChallengesSent];
+      }
+      setSent(allSent);
+
+      // Received
+      if (user.teamId) {
+        // Owner — show join requests, personal invites, and challenges
+        const [receivedRes, invitesRes, challengesReceivedRes] = await Promise.all([
+          axios.get(`/teams/${user.teamId}/join-requests`),
+          axios.get(`/teams/invites/user/${user.id}`),
+          axios.get(`/challenges/received/${user.teamId}`)
+        ]);
+
+        const enrichedReceived = (receivedRes.data || []).map((r) => ({
+          ...r,
+          fromName: userMap[r.userId]
+            ? `${userMap[r.userId].firstName} ${userMap[r.userId].lastName}`
+            : `User ${r.userId}`,
+          fromInitial: userMap[r.userId]?.firstName?.charAt(0) || "?",
+          teamName: teamMap[r.teamId] || `Team ${r.teamId}`,
           messageType: "JOIN_REQUEST",
         }));
 
-        // If owner, also fetch invites their team sent
-        let allSent = enrichedSent;
-        if (user.teamId) {
-          const invitesSentRes = await axios.get(`/teams/${user.teamId}/sent-invites`);
-          const enrichedInvitesSent = (invitesSentRes.data || []).map((r) => ({
-            ...r,
-            teamName: teamMap[r.teamId] || `Team ${r.teamId}`,
-            toName: userMap[r.userId]
-              ? `${userMap[r.userId].firstName} ${userMap[r.userId].lastName}`
-              : `User ${r.userId}`,
-            messageType: "INVITE",
-          }));
-          allSent = [...enrichedSent, ...enrichedInvitesSent];
+        const enrichedInvites = (invitesRes.data || []).map((r) => ({
+          ...r,
+          fromName: teamMap[r.teamId] || `Team ${r.teamId}`,
+          fromInitial: (teamMap[r.teamId] || "T").charAt(0),
+          teamName: teamMap[r.teamId] || `Team ${r.teamId}`,
+          messageType: "INVITE",
+        }));
 
-          // Also fetch challenges sent by this user's team
-          const challengesSentRes = await axios.get(`/challenges/sent/${user.teamId}`);
-          const enrichedChallengesSent = (challengesSentRes.data || []).map((c) => ({
-            ...c,
-            requestId: c.challengeId,
-            teamName: teamMap[c.challengedTeamId] || `Team ${c.challengedTeamId}`,
-            toName: teamMap[c.challengedTeamId] || `Team ${c.challengedTeamId}`,
-            requestDate: c.challengeDate,
-            messageType: "CHALLENGE",
-          }));
-          allSent = [...allSent, ...enrichedChallengesSent];
-        }
-        setSent(allSent);
+        const enrichedChallengesReceived = (challengesReceivedRes.data || []).map((c) => ({
+          ...c,
+          requestId: c.challengeId,
+          fromName: teamMap[c.challengerTeamId] || `Team ${c.challengerTeamId}`,
+          fromInitial: (teamMap[c.challengerTeamId] || "T").charAt(0),
+          teamName: teamMap[c.challengedTeamId] || `Team ${c.challengedTeamId}`,
+          requestDate: c.challengeDate,
+          messageType: "CHALLENGE",
+        }));
 
-        // Received
-        if (user.teamId) {
-          // Owner — show join requests and challenges received
-          const receivedRes = await axios.get(`/teams/${user.teamId}/join-requests`);
-          const enrichedReceived = (receivedRes.data || []).map((r) => ({
-            ...r,
-            fromName: userMap[r.userId]
-              ? `${userMap[r.userId].firstName} ${userMap[r.userId].lastName}`
-              : `User ${r.userId}`,
-            fromInitial: userMap[r.userId]?.firstName?.charAt(0) || "?",
-            teamName: teamMap[r.teamId] || `Team ${r.teamId}`,
-            messageType: "JOIN_REQUEST",
-          }));
-
-          // Also fetch challenges received by this team
-          const challengesReceivedRes = await axios.get(`/challenges/received/${user.teamId}`);
-          const enrichedChallengesReceived = (challengesReceivedRes.data || []).map((c) => ({
-            ...c,
-            requestId: c.challengeId,
-            fromName: teamMap[c.challengerTeamId] || `Team ${c.challengerTeamId}`,
-            fromInitial: (teamMap[c.challengerTeamId] || "T").charAt(0),
-            teamName: teamMap[c.challengedTeamId] || `Team ${c.challengedTeamId}`,
-            requestDate: c.challengeDate,
-            messageType: "CHALLENGE",
-          }));
-
-          setReceived([...enrichedReceived, ...enrichedChallengesReceived]);
-        } else {
-          // Player — show invites
-          const invitesRes = await axios.get(`/teams/invites/user/${user.id}`);
-          const enrichedInvites = (invitesRes.data || []).map((r) => ({
-            ...r,
-            fromName: teamMap[r.teamId] || `Team ${r.teamId}`,
-            fromInitial: (teamMap[r.teamId] || "T").charAt(0),
-            teamName: teamMap[r.teamId] || `Team ${r.teamId}`,
-            messageType: "INVITE",
-          }));
-          setReceived(enrichedInvites);
-        }
-      } catch (err) {
-        console.error("Failed to load inbox:", err);
-      } finally {
-        setLoading(false);
+        setReceived([...enrichedReceived, ...enrichedInvites, ...enrichedChallengesReceived]);
+      } else {
+        // Player — show personal invites only
+        const invitesRes = await axios.get(`/teams/invites/user/${user.id}`);
+        const enrichedInvites = (invitesRes.data || []).map((r) => ({
+          ...r,
+          fromName: teamMap[r.teamId] || `Team ${r.teamId}`,
+          fromInitial: (teamMap[r.teamId] || "T").charAt(0),
+          teamName: teamMap[r.teamId] || `Team ${r.teamId}`,
+          messageType: "INVITE",
+        }));
+        setReceived(enrichedInvites);
       }
-    };
+    } catch (err) {
+      console.error("Failed to load inbox:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchData();
-  }, [user]);
+  fetchData();
+}, [user]);
 
   const handleAccept = (requestId, messageType) => {
     const url = messageType === "CHALLENGE"

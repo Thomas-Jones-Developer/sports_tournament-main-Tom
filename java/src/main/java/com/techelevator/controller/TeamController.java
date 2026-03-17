@@ -117,11 +117,6 @@ public class TeamController {
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
-    @GetMapping("/member/{userId}")
-    public Team getTeamByMemberId(@PathVariable int userId) {
-        return teamDao.getTeamByMemberId(userId);
-    }
-
     @GetMapping("/{teamId}/members")
     public List<User> getTeamMembers(@PathVariable int teamId) {
         return teamDao.getTeamMembers(teamId);
@@ -136,5 +131,10 @@ public class TeamController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void leaveTeam(@PathVariable int teamId, @PathVariable int userId) {
         teamDao.removeTeamMember(teamId, userId);
+    }
+
+    @GetMapping("/member/{userId}")
+    public List<Team> getTeamsByMemberId(@PathVariable int userId) {
+        return teamDao.getTeamsByMemberId(userId);
     }
 }

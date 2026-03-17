@@ -27,20 +27,21 @@ export default function LoginView() {
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         localStorage.setItem('token', token);
 
-        return Promise.all([
-          TeamService.getTeams(),
-          axios.get(`/team/member/${user.id}`)
-        ]).then(([teamsRes, memberRes]) => {
-          const teams = teamsRes.data || [];
-          const ownedTeam = teams.find((t) => t.userId === user.id);
-          const memberTeam = memberRes.data;
-          const enrichedUser = {
-            ...user,
-            teamId: ownedTeam?.teamId || memberTeam?.teamId || null,
-          };
-          localStorage.setItem('user', JSON.stringify(enrichedUser));
-          setUser(enrichedUser);
-        });
+return Promise.all([
+  TeamService.getTeams(),
+  axios.get(`/team/member/${user.id}`)
+]).then(([teamsRes, memberRes]) => {
+  const teams = teamsRes.data || [];
+  const ownedTeam = teams.find((t) => t.userId === user.id);
+  const memberTeams = memberRes.data || [];
+  const firstMemberTeam = Array.isArray(memberTeams) ? memberTeams[0] : memberTeams;
+  const enrichedUser = {
+    ...user,
+    teamId: ownedTeam?.teamId || firstMemberTeam?.teamId || null,
+  };
+  localStorage.setItem('user', JSON.stringify(enrichedUser));
+  setUser(enrichedUser);
+});
       })
       .catch((error) => {
         const message = error.response?.data?.message || 'Login failed.';

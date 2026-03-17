@@ -19,18 +19,19 @@ export default function UserProvider({ children }) {
   }
 
 function refreshUser(currentUser) {
-  if (!currentUser) return;
-
-  Promise.all([
+  if (!currentUser) return Promise.resolve();
+  return Promise.all([
     TeamService.getTeams(),
     axios.get(`/team/member/${currentUser.id}`)
   ]).then(([teamsRes, memberRes]) => {
     const teams = teamsRes.data || [];
     const ownedTeam = teams.find((t) => t.userId === currentUser.id);
-    const memberTeam = memberRes.data;
+    const memberTeams = memberRes.data || [];
+    // Use first member team for teamId (for challenge/invite logic)
+    const firstMemberTeam = Array.isArray(memberTeams) ? memberTeams[0] : memberTeams;
     const enrichedUser = {
       ...currentUser,
-      teamId: ownedTeam?.teamId || memberTeam?.teamId || null,
+      teamId: ownedTeam?.teamId || firstMemberTeam?.teamId || null,
     };
     localStorage.setItem('user', JSON.stringify(enrichedUser));
     setUser(enrichedUser);

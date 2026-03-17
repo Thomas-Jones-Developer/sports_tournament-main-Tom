@@ -8,9 +8,10 @@ export default function MyTeamsView() {
   const { user, refreshUser } = useContext(UserContext);
   const navigate = useNavigate();
   const [ownedTeams, setOwnedTeams] = useState([]);
-  const [memberTeam, setMemberTeam] = useState(null);
+  const [memberTeams, setMemberTeams] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
+ const [showLeaveConfirm, setShowLeaveConfirm] = useState(null);
+
 
   useEffect(() => {
     if (!user) return;
@@ -19,25 +20,24 @@ export default function MyTeamsView() {
       axios.get(`/team/owned/${user.id}`),
       axios.get(`/team/member/${user.id}`)
     ])
-      .then(([ownedRes, memberRes]) => {
-        setOwnedTeams(ownedRes.data || []);
-        setMemberTeam(memberRes.data || null);
-      })
+.then(([ownedRes, memberRes]) => {
+  setOwnedTeams(ownedRes.data || []);
+  setMemberTeams(memberRes.data || []); // fix this line
+})
       .catch((err) => console.error("Failed to load teams:", err))
       .finally(() => setLoading(false));
   }, [user]);
 
-  const handleLeaveTeam = async () => {
-    if (!memberTeam) return;
-    try {
-      await axios.delete(`/team/${memberTeam.teamId}/members/${user.id}`);
-      setMemberTeam(null);
-      setShowLeaveConfirm(false);
-      refreshUser(user);
-    } catch (err) {
-      alert(err.response?.data?.message || "Failed to leave team.");
-    }
-  };
+const handleLeaveTeam = async (teamId) => {
+  try {
+    await axios.delete(`/team/${teamId}/members/${user.id}`);
+    setMemberTeams(prev => prev.filter(t => t.teamId !== teamId));
+    setShowLeaveConfirm(null);
+    refreshUser(user);
+  } catch (err) {
+    alert(err.response?.data?.message || "Failed to leave team.");
+  }
+};
 
   if (!user) return <div className={styles.empty}>Please log in to view your teams.</div>;
   if (loading) return <div className={styles.empty}>Loading...</div>;
@@ -86,47 +86,43 @@ export default function MyTeamsView() {
 
         {/* Member Of */}
         <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>Teams You've Joined</h2>
-          {!memberTeam ? (
-            <div className={styles.empty}>You haven't joined any teams yet.</div>
-          ) : (
-            <div className={styles.teamGrid}>
-              <div className={styles.teamCard}>
-                <div
-                  onClick={() => navigate(`/SingleTeam/${memberTeam.teamId}`)}
-                  style={{ cursor: "pointer" }}
-                >
-                  <div className={styles.teamCardHeader}>
-                    <span className={styles.memberBadge}>✓ Member</span>
-                  </div>
-                  <div className={styles.teamName}>{memberTeam.teamName}</div>
-                  <div className={styles.teamMeta}>{memberTeam.sportName}</div>
-                  <div className={styles.teamMeta}>
-                    {memberTeam.numberOfMembers} roster spots · {memberTeam.acceptingMembers ? "Recruiting" : "Closed"}
-                  </div>
-                </div>
-
-                {!showLeaveConfirm ? (
-                  <button
-                    className={styles.leaveBtn}
-                    onClick={(e) => { e.stopPropagation(); setShowLeaveConfirm(true); }}
-                  >
-                    Leave Team
-                  </button>
-                ) : (
-                  <div className={styles.confirmBox}>
-                    <p className={styles.confirmText}>Are you sure you want to leave {memberTeam.teamName}?</p>
-                    <div className={styles.confirmActions}>
-                      <button className={styles.confirmDanger} onClick={handleLeaveTeam}>Yes, Leave</button>
-                      <button className={styles.confirmCancel} onClick={() => setShowLeaveConfirm(false)}>Cancel</button>
-                    </div>
-                  </div>
-                )}
+  <h2 className={styles.sectionTitle}>Teams You've Joined</h2>
+  {memberTeams.length === 0 ? (
+    <div className={styles.empty}>You haven't joined any teams yet.</div>
+  ) : (
+    <div className={styles.teamGrid}>
+      {memberTeams.map((memberTeam) => (
+        <div className={styles.teamCard} key={memberTeam.teamId}>
+          <div onClick={() => navigate(`/SingleTeam/${memberTeam.teamId}`)} style={{ cursor: "pointer" }}>
+            <div className={styles.teamCardHeader}>
+              <span className={styles.memberBadge}>✓ Member</span>
+            </div>
+            <div className={styles.teamName}>{memberTeam.teamName}</div>
+            <div className={styles.teamMeta}>{memberTeam.sportName}</div>
+            <div className={styles.teamMeta}>
+              {memberTeam.numberOfMembers} roster spots · {memberTeam.acceptingMembers ? "Recruiting" : "Closed"}
+            </div>
+          </div>
+          <button
+            className={styles.leaveBtn}
+            onClick={(e) => { e.stopPropagation(); setShowLeaveConfirm(memberTeam.teamId); }}
+          >
+            Leave Team
+          </button>
+          {showLeaveConfirm === memberTeam.teamId && (
+            <div className={styles.confirmBox}>
+              <p className={styles.confirmText}>Are you sure you want to leave {memberTeam.teamName}?</p>
+              <div className={styles.confirmActions}>
+                <button className={styles.confirmDanger} onClick={() => handleLeaveTeam(memberTeam.teamId)}>Yes, Leave</button>
+                <button className={styles.confirmCancel} onClick={() => setShowLeaveConfirm(null)}>Cancel</button>
               </div>
             </div>
           )}
         </div>
-
+      ))}
+    </div>
+  )}
+</div>
       </div>
     </div>
   );

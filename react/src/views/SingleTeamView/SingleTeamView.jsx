@@ -18,9 +18,15 @@ export default function SingleTeamView() {
   const [loading, setLoading] = useState(true);
   const [requested, setRequested] = useState(false);
   const [challenged, setChallenged] = useState(false);
-  const [locationName, setLocationName] = useState("");
-  const [locationAddress, setLocationAddress] = useState("");
   const [matchTime, setMatchTime] = useState("");
+
+  // Park dropdown state
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
+  const [parks, setParks] = useState([]);
+  const [selectedState, setSelectedState] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
+  const [selectedPark, setSelectedPark] = useState(null);
 
   // Modal state
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -31,12 +37,14 @@ export default function SingleTeamView() {
   useEffect(() => {
     Promise.all([
       TeamService.getTeamById(id),
-      axios.get(`/team/${id}/members`)
+      axios.get(`/team/${id}/members`),
+      axios.get("/parks/states")
     ])
-      .then(([teamRes, membersRes]) => {
+      .then(([teamRes, membersRes, statesRes]) => {
         const teamData = teamRes.data;
         setTeam(teamData);
         setMembers(membersRes.data || []);
+        setStates(statesRes.data || []);
 
         if (teamData.userId) {
           UsersService.getUserById(teamData.userId)
@@ -50,6 +58,29 @@ export default function SingleTeamView() {
       .catch((error) => console.error("Failed to load team:", error))
       .finally(() => setLoading(false));
   }, [id]);
+
+  const handleStateChange = (e) => {
+    const state = e.target.value;
+    setSelectedState(state);
+    setSelectedCity("");
+    setSelectedPark(null);
+    setParks([]);
+    axios.get(`/parks/cities?state=${state}`)
+      .then(res => setCities(res.data || []));
+  };
+
+  const handleCityChange = (e) => {
+    const city = e.target.value;
+    setSelectedCity(city);
+    setSelectedPark(null);
+    axios.get(`/parks?city=${city}&state=${selectedState}`)
+      .then(res => setParks(res.data || []));
+  };
+
+  const handleParkChange = (e) => {
+    const park = parks.find(p => String(p.parkId) === e.target.value);
+    setSelectedPark(park || null);
+  };
 
   const handleRequestClick = () => {
     if (!currentUser) {
@@ -83,24 +114,28 @@ export default function SingleTeamView() {
       .catch((err) => console.error("Failed to transfer team:", err));
   };
 
-const handleChallenge = () => {
-  const formattedTime = matchTime.length === 16 ? matchTime + ":00" : matchTime;
-  axios.post(`/challenges`, {
-    challengerTeamId: currentUser.teamId,
-    challengedTeamId: parseInt(id),
-    locationName,
-    locationAddress,
-    matchTime: formattedTime,
-  })
-    .then(() => {
-      setChallenged(true);
-      setShowChallengeModal(false);
+  const handleChallenge = () => {
+    if (!selectedPark || !matchTime) {
+      alert("Please select a park and match time.");
+      return;
+    }
+    const formattedTime = matchTime.length === 16 ? matchTime + ":00" : matchTime;
+    axios.post(`/challenges`, {
+      challengerTeamId: currentUser.teamId,
+      challengedTeamId: parseInt(id),
+      locationName: selectedPark.parkName,
+      locationAddress: `${selectedPark.address}, ${selectedPark.city}, ${selectedPark.state}`,
+      matchTime: formattedTime,
     })
-    .catch((err) => {
-      console.error("Failed to send challenge:", err);
-      alert("Failed to send challenge.");
-    });
-};
+      .then(() => {
+        setChallenged(true);
+        setShowChallengeModal(false);
+      })
+      .catch((err) => {
+        console.error("Failed to send challenge:", err);
+        alert("Failed to send challenge.");
+      });
+  };
 
   const isCaptain = currentUser && team && currentUser.id === team.userId;
   const isMember = currentUser && members.some(m => m.id === currentUser.id);
@@ -164,61 +199,70 @@ const handleChallenge = () => {
 
       {/* Challenge Modal */}
       {showChallengeModal && (
-  <div className={styles.modalOverlay}>
-    <div className={styles.modal}>
-      <h2 className={styles.modalTitle}>⚔️ Issue a Challenge</h2>
-      <p className={styles.modalText}>
-        You are about to challenge <strong>{team.teamName}</strong> to a match. Fill in the details below.
-      </p>
-      <div className={styles.challengePreview}>
-        <div className={styles.challengeTeam}>Your Team</div>
-        <div className={styles.challengeVs}>VS</div>
-        <div className={styles.challengeTeam}>{team.teamName}</div>
-      </div>
-      <div className={styles.challengeFields}>
-        <div className={styles.challengeField}>
-          <label className={styles.challengeFieldLabel}>Location Name</label>
-          <input
-            className={styles.challengeFieldInput}
-            type="text"
-            placeholder="e.g. Goodale Park"
-            value={locationName}
-            onChange={(e) => setLocationName(e.target.value)}
-          />
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <h2 className={styles.modalTitle}>⚔️ Issue a Challenge</h2>
+            <p className={styles.modalText}>
+              You are about to challenge <strong>{team.teamName}</strong> to a match. Fill in the details below.
+            </p>
+            <div className={styles.challengePreview}>
+              <div className={styles.challengeTeam}>Your Team</div>
+              <div className={styles.challengeVs}>VS</div>
+              <div className={styles.challengeTeam}>{team.teamName}</div>
+            </div>
+            <div className={styles.challengeFields}>
+              <div className={styles.challengeField}>
+                <label className={styles.challengeFieldLabel}>State</label>
+                <select className={styles.challengeFieldInput} value={selectedState} onChange={handleStateChange}>
+                  <option value="" disabled>Select state...</option>
+                  {states.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </div>
+              <div className={styles.challengeField}>
+                <label className={styles.challengeFieldLabel}>City</label>
+                <select className={styles.challengeFieldInput} value={selectedCity} onChange={handleCityChange} disabled={!selectedState}>
+                  <option value="" disabled>Select city...</option>
+                  {cities.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+              <div className={styles.challengeField}>
+                <label className={styles.challengeFieldLabel}>Park</label>
+                <select className={styles.challengeFieldInput} value={selectedPark?.parkId || ""} onChange={handleParkChange} disabled={!selectedCity}>
+                  <option value="" disabled>Select park...</option>
+                  {parks.map(p => <option key={p.parkId} value={p.parkId}>{p.parkName}</option>)}
+                </select>
+              </div>
+              {selectedPark && (
+                <div className={styles.challengeField}>
+                  <label className={styles.challengeFieldLabel}>Address</label>
+                  <div className={styles.addressPreview}>
+                    📍 {selectedPark.parkName} — {selectedPark.address}, {selectedPark.city}, {selectedPark.state}
+                  </div>
+                </div>
+              )}
+              <div className={styles.challengeField}>
+                <label className={styles.challengeFieldLabel}>Match Date & Time</label>
+                <input
+                  className={styles.challengeFieldInput}
+                  type="datetime-local"
+                  value={matchTime}
+                  onChange={(e) => setMatchTime(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className={styles.modalActions}>
+              <button className={styles.cancelBtn} onClick={() => setShowChallengeModal(false)}>Cancel</button>
+              <button
+                className={styles.confirmChallengeBtn}
+                onClick={handleChallenge}
+                disabled={!selectedPark || !matchTime}
+              >
+                ⚔️ This looks good, send it!
+              </button>
+            </div>
+          </div>
         </div>
-        <div className={styles.challengeField}>
-          <label className={styles.challengeFieldLabel}>Address</label>
-          <input
-            className={styles.challengeFieldInput}
-            type="text"
-            placeholder="e.g. 120 W Goodale St, Columbus, OH"
-            value={locationAddress}
-            onChange={(e) => setLocationAddress(e.target.value)}
-          />
-        </div>
-        <div className={styles.challengeField}>
-          <label className={styles.challengeFieldLabel}>Match Date & Time</label>
-          <input
-            className={styles.challengeFieldInput}
-            type="datetime-local"
-            value={matchTime}
-            onChange={(e) => setMatchTime(e.target.value)}
-          />
-        </div>
-      </div>
-      <div className={styles.modalActions}>
-        <button className={styles.cancelBtn} onClick={() => setShowChallengeModal(false)}>Cancel</button>
-        <button
-          className={styles.confirmChallengeBtn}
-          onClick={handleChallenge}
-          disabled={!locationName || !locationAddress || !matchTime}
-        >
-          ⚔️ This looks good, send it!
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+      )}
 
       {/* Hero */}
       <div className={styles.hero}>
@@ -310,7 +354,6 @@ const handleChallenge = () => {
               </div>
             ) : (
               <div className={styles.captainActions}>
-                {/* Join section */}
                 <p className={styles.actionDesc}>
                   {team.acceptingMembers
                     ? `${team.teamName} is actively looking for new players.`
@@ -329,8 +372,6 @@ const handleChallenge = () => {
                     {requested ? "✓ Request Sent" : "Request to Join"}
                   </button>
                 )}
-
-                {/* Challenge section — only for external captains */}
                 {isExternalCaptain && (
                   <>
                     <hr style={{ margin: "16px 0", border: "none", borderTop: "1px solid #f0f0ec" }} />
@@ -340,7 +381,7 @@ const handleChallenge = () => {
                       onClick={() => setShowChallengeModal(true)}
                       disabled={challenged}
                     >
-                      {challenged ? "Challenge Sent" : "Challenge Team"}
+                      {challenged ? "Challenge Sent" : "⚔️ Challenge Team"}
                     </button>
                   </>
                 )}

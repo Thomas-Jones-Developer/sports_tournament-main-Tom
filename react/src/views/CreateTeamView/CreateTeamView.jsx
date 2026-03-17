@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TeamService from '../../services/TeamService';
 import styles from './CreateTeam.module.css';
 import sportsBackground from '../../assets/soccer/SoccerPics/pexels-jonathanborba-18026365.jpg';
 import { SPORT_ICONS } from '../../constants/sportsIcons';
+import { UserContext } from '../../context/UserContext';
 
 const SPORT_MAP = {
   'Soccer': '1',
@@ -14,6 +15,7 @@ const SPORT_MAP = {
   'Esport Pokemon Unite': '6',
 };
 
+
 export default function CreateTeam() {
   const [team, setTeam] = useState({
     teamName: '',
@@ -22,7 +24,8 @@ export default function CreateTeam() {
     numberOfMembers: ''
   });
 
-  const navigate = useNavigate();
+ const navigate = useNavigate();
+  const { user, refreshUser } = useContext(UserContext);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -47,7 +50,7 @@ export default function CreateTeam() {
     try {
       const res = await TeamService.createTeam(payload);
       if (res.status === 201) {
-        alert('Team created successfully');
+        await refreshUser(user);
         navigate('/myTeams');
       }
     } catch (err) {
