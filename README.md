@@ -68,7 +68,7 @@ The frontend and backend are fully decoupled. The React app communicates with th
 ## Author
 
 Built by **Thomas Jones**  
-[GitHub](https://github.com/Thomas-Jones-Developer) | [LinkedIn](your-linkedin-url-here)
+[GitHub](https://github.com/Thomas-Jones-Developer) | [LinkedIn](www.linkedin.com/in/thomas-jones-sws)
 
 ---
 
