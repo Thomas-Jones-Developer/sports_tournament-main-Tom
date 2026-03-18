@@ -2,7 +2,7 @@
 
 A social platform for amateur sports teams. TE Sports lets players find teams, captains recruit talent, and teams challenge each other to matches at real local parks.
 
-🔗 [Live Frontend](https://te-sports.vercel.app) | 📹 Demo video coming soon
+🔗 [Live Frontend](https://te-sports.vercel.app) | [Video Demo](https://www.youtube.com/watch?v=X_gPESSQidE)
 
 ---
 
